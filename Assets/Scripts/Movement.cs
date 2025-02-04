@@ -5,7 +5,8 @@ namespace Brawlley
 {
     public class Movement : MonoBehaviour
     {
-        [SerializeField] float speed = 5f;
+        [SerializeField] float moveSpeed = 5f;
+        [SerializeField] float jumpForce = 5f;
         [SerializeField] Rigidbody2D rb;
         GameInputs inputs;
 
@@ -17,6 +18,7 @@ namespace Brawlley
                 To-Do: Manage the input actions in a more organized way
             */
             inputs.Player.Enable();
+            inputs.Player.Jump.performed += Jump_performed; // Subscribe to the Jump action
         }
 
         void Start()
@@ -33,7 +35,10 @@ namespace Brawlley
         public void Move()
         {
             Vector2 direction = inputs.Player.Movement.ReadValue<Vector2>();
-            rb.linearVelocityX = direction.x * speed;
+            rb.linearVelocityX = direction.x * moveSpeed;
         }
+
+        void Jump_performed(InputAction.CallbackContext context) =>
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 }
