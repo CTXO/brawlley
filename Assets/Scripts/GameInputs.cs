@@ -59,6 +59,28 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": ""Up"",
+                    ""id"": ""8cfb61f4-7258-4807-bb46-1e1914d1fce9"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Down"",
+                    ""id"": ""3c215bc7-8d4d-4ed2-8a73-acb45bbc3f31"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": ""left"",
                     ""id"": ""35d8e665-826d-4971-b7df-9c53db6b3291"",
                     ""path"": ""<Keyboard>/leftArrow"",
@@ -137,23 +159,71 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""6e0603f8-d626-41dd-b7da-0516b28a0186"",
-                    ""path"": ""<Keyboard>/upArrow"",
+                    ""id"": ""440316d4-35b5-4750-ac61-efe97be3217d"",
+                    ""path"": ""<Keyboard>/c"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Default"",
+                    ""groups"": """",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a95d8803-1ad3-43e1-94e6-2e83e4df01eb"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""id"": ""56ba2814-d895-4fac-970b-b3669b07e2ca"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Attack"",
+            ""id"": ""8bcfb0fa-a031-486d-a92e-652b275f9ddb"",
+            ""actions"": [
+                {
+                    ""name"": ""Melee"",
+                    ""type"": ""Button"",
+                    ""id"": ""6323ed48-b01f-48c9-9cf4-2cb54bf7bca9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Spell"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bbad25d-1756-424a-9e07-e064075ae866"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""149a7808-a676-46d6-b439-c21246fe8bf4"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Spell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6a65786-92aa-4ce4-81cd-ea3f6d4a8540"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Melee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -178,11 +248,16 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        // Attack
+        m_Attack = asset.FindActionMap("Attack", throwIfNotFound: true);
+        m_Attack_Melee = m_Attack.FindAction("Melee", throwIfNotFound: true);
+        m_Attack_Spell = m_Attack.FindAction("Spell", throwIfNotFound: true);
     }
 
     ~@GameInputs()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, GameInputs.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Attack.enabled, "This will cause a leak and performance issues, GameInputs.Attack.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -294,6 +369,60 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Attack
+    private readonly InputActionMap m_Attack;
+    private List<IAttackActions> m_AttackActionsCallbackInterfaces = new List<IAttackActions>();
+    private readonly InputAction m_Attack_Melee;
+    private readonly InputAction m_Attack_Spell;
+    public struct AttackActions
+    {
+        private @GameInputs m_Wrapper;
+        public AttackActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Melee => m_Wrapper.m_Attack_Melee;
+        public InputAction @Spell => m_Wrapper.m_Attack_Spell;
+        public InputActionMap Get() { return m_Wrapper.m_Attack; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(AttackActions set) { return set.Get(); }
+        public void AddCallbacks(IAttackActions instance)
+        {
+            if (instance == null || m_Wrapper.m_AttackActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_AttackActionsCallbackInterfaces.Add(instance);
+            @Melee.started += instance.OnMelee;
+            @Melee.performed += instance.OnMelee;
+            @Melee.canceled += instance.OnMelee;
+            @Spell.started += instance.OnSpell;
+            @Spell.performed += instance.OnSpell;
+            @Spell.canceled += instance.OnSpell;
+        }
+
+        private void UnregisterCallbacks(IAttackActions instance)
+        {
+            @Melee.started -= instance.OnMelee;
+            @Melee.performed -= instance.OnMelee;
+            @Melee.canceled -= instance.OnMelee;
+            @Spell.started -= instance.OnSpell;
+            @Spell.performed -= instance.OnSpell;
+            @Spell.canceled -= instance.OnSpell;
+        }
+
+        public void RemoveCallbacks(IAttackActions instance)
+        {
+            if (m_Wrapper.m_AttackActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IAttackActions instance)
+        {
+            foreach (var item in m_Wrapper.m_AttackActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_AttackActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public AttackActions @Attack => new AttackActions(this);
     private int m_DefaultSchemeIndex = -1;
     public InputControlScheme DefaultScheme
     {
@@ -307,5 +436,10 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+    }
+    public interface IAttackActions
+    {
+        void OnMelee(InputAction.CallbackContext context);
+        void OnSpell(InputAction.CallbackContext context);
     }
 }
