@@ -196,6 +196,17 @@
                 },
                 {
                     "name": "",
+                    "id": "acaa8e1a-b230-4f65-bbf6-4f761db64e0f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Spell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "a6a65786-92aa-4ce4-81cd-ea3f6d4a8540",
                     "path": "<Keyboard>/x",
                     "interactions": "",
