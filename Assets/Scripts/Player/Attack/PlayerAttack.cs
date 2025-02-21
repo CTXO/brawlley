@@ -9,30 +9,35 @@ namespace Brawlley
         Ready,
         Cooldown
     }
-    public enum PlayerViewDirection
-    {
-        Right,
-        Left
-    }
+
     public abstract class PlayerAttack : MonoBehaviour
     {
         #region Player Attack Resources
         [Header("Player Attack Resources")]
         public Player player;
+        public GameInputs gameInputs;
         #endregion
 
         #region Player Attack Data
         [Header("Player Attack Data")]
-        public float damage = 10f;
-        public float knockbackForce = 5f;
+        [SerializeField] float damage = 10f;
+        public float Damage { get => damage; set => damage = value; }
+
+        [SerializeField] float knockbackForce = 5f;
+        public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
 
         [Tooltip("The time in seconds between each attack.")]
         public float cooldown = 1f;
-
-
-        [Header("Player Attack Status")]
         public AttackStatus status = AttackStatus.Ready;
-        public PlayerViewDirection viewDirection = PlayerViewDirection.Right;
+        #endregion
+
+        #region MonoBehaviour Lifecycle Methods
+        protected virtual void Awake()
+        {
+            gameInputs = new GameInputs();
+            if (player == null)
+                player = GetComponent<Player>();
+        }
         #endregion
 
         #region Attack Methods
@@ -48,14 +53,6 @@ namespace Brawlley
         {
             status = AttackStatus.Cooldown;
             StartCoroutine(CooldownCoroutine());
-        }
-
-        public void SetPlayerViewDirection(Vector2 direction)
-        {
-            if (direction.x > 0)
-                viewDirection = PlayerViewDirection.Right;
-            if (direction.x < 0)
-                viewDirection = PlayerViewDirection.Left;
         }
         #endregion
     }
