@@ -296,8 +296,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1525459401}
   - component: {fileID: 1525459400}
-  - component: {fileID: 1525459399}
   - component: {fileID: 1525459398}
+  - component: {fileID: 1525459399}
   - component: {fileID: 1525459397}
   m_Layer: 0
   m_Name: Spell
@@ -318,8 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2e5dfe5ba1a394cb01cf1e69b999af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 25
-  knockbackForce: 1
+  damage: 8
+  knockbackForce: 5
   manaCost: 1
   onTriggerEnterEvent:
     m_PersistentCalls:

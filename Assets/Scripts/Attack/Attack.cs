@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Brawlley.Attacks
 {
@@ -10,6 +11,30 @@ namespace Brawlley.Attacks
         public float Damage => damage;
         [SerializeField] protected float knockbackForce = 1f;
         public float KnockbackForce => knockbackForce;
+
+        [Header("Events")]
+        [SerializeField] UnityEvent onTriggerEnterEvent;
+        protected Collider2D currentCollision;
+        #endregion
+
+        #region Collision Methods
+        public void OnTriggerEnter2D(Collider2D collision)
+        {
+            currentCollision = collision;
+            onTriggerEnterEvent.Invoke();
+            currentCollision = null;
+        }
+        #endregion
+
+        #region Attack Methods
+        public virtual void OnPlayerCollisionDealDamage()
+        {
+            if (currentCollision != null && currentCollision.CompareTag("Player"))
+            {
+                if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
+                    playerHealth.Health -= damage;
+            }
+        }
         #endregion
     }
 }
