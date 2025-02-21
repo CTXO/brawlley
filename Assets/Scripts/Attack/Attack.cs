@@ -9,8 +9,12 @@ namespace Brawlley.Attacks
         [Header("Attack Data")]
         [SerializeField] protected float damage = 1f;
         public float Damage => damage;
+
         [SerializeField] protected float knockbackForce = 1f;
         public float KnockbackForce => knockbackForce;
+
+        [SerializeField] protected string ignoreTeam;
+        public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
 
         [Header("Events")]
         [SerializeField] UnityEvent onTriggerEnterEvent;
@@ -31,8 +35,15 @@ namespace Brawlley.Attacks
         {
             if (currentCollision != null && currentCollision.CompareTag("Player"))
             {
-                if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
-                    playerHealth.Health -= damage;
+                if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
+                {
+                    if (collidedPlayer.Team == IgnoreTeam)
+                        return;
+
+                    if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
+                        playerHealth.Health -= damage;
+                }
+
             }
         }
         #endregion
