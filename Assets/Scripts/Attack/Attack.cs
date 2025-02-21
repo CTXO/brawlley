@@ -7,13 +7,13 @@ namespace Brawlley.Attacks
     {
         #region Attack Data
         [Header("Attack Data")]
-        [SerializeField] protected float damage = 1f;
+        [SerializeField] float damage = 1f;
         public float Damage => damage;
 
-        [SerializeField] protected float knockbackForce = 1f;
+        [SerializeField] float knockbackForce = 1f;
         public float KnockbackForce => knockbackForce;
 
-        [SerializeField] protected string ignoreTeam;
+        [SerializeField] string ignoreTeam;
         public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
 
         [Header("Events")]
@@ -41,7 +41,7 @@ namespace Brawlley.Attacks
                         return;
 
                     if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
-                        playerHealth.Health -= damage;
+                        playerHealth.Health += damage;
                 }
 
             }
