@@ -32,26 +32,15 @@ public class PlayerMovement : MonoBehaviour
     private float turnSpeed;
 
     [Header("Current State")]
-    public bool onGround;
-    public bool pressingKey;
+    private bool onGround;
+    private bool onWall;
+    private bool pressingKey;
 
     private void Awake()
     {
         //Find the character's Rigidbody and ground detection script
         playerRb = GetComponent<Rigidbody2D>();
         surfaceDetector = GetComponent<PlayerSurfaceDetection>();
-    }
-
-    public void OnMovement(InputAction.CallbackContext context)
-    {
-        //This is called when you input a direction on a valid input type, such as arrow keys or analogue stick
-        //The value will read -1 when pressing left, 0 when idle, and 1 when pressing right.
-
-        //if (movementLimiter.instance.CharacterCanMove)
-        //{
-        //    
-        //}
-        directionX = context.ReadValue<Vector2>().x;
     }
 
     private void Update()
@@ -86,11 +75,13 @@ public class PlayerMovement : MonoBehaviour
 
         //Get Kit's current ground status from her ground script
         onGround = surfaceDetector.GetOnGround();
+        onWall = surfaceDetector.GetOnWall();
 
         //Get the Rigidbody's current velocity
         velocity = playerRb.linearVelocity;
 
         //Calculate movement, depending on whether "Instant Movement" has been checked
+
         if (useAcceleration)
         {
             RunWithAcceleration();
@@ -103,10 +94,11 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                RunWithoutAcceleration();
+                RunWithAcceleration();
             }
-            
+
         }
+       
     }
 
     private void RunWithAcceleration()
@@ -137,7 +129,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Move our velocity towards the desired velocity, at the rate of the number calculated above
-        velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+        
+
+        if (!onWall)
+        {
+            velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+        }
 
         //Update the Rigidbody with this new velocity
         playerRb.linearVelocity = velocity;
@@ -147,8 +144,16 @@ public class PlayerMovement : MonoBehaviour
     private void RunWithoutAcceleration()
     {
         //If we're not using acceleration and deceleration, just send our desired velocity (direction * max speed) to the Rigidbody
-        velocity.x = desiredVelocity.x;
+        if (!onWall)
+        {
+            velocity.x = desiredVelocity.x;
+        }
 
         playerRb.linearVelocity = velocity;
+    }
+
+    public void UpdateDirection(float newDirection)
+    {
+        directionX = newDirection;
     }
 }
