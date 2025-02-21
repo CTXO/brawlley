@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,13 +16,21 @@ namespace Brawlley
     }
     public abstract class PlayerAttack : MonoBehaviour
     {
-        #region Properties
+        #region Player Attack Resources
+        [Header("Player Attack Resources")]
+        public Player player;
+        #endregion
+
+        #region Player Attack Data
+        [Header("Player Attack Data")]
         public float damage = 10f;
         public float knockbackForce = 5f;
 
         [Tooltip("The time in seconds between each attack.")]
         public float cooldown = 1f;
 
+
+        [Header("Player Attack Status")]
         public AttackStatus status = AttackStatus.Ready;
         public PlayerViewDirection viewDirection = PlayerViewDirection.Right;
         #endregion
@@ -46,13 +53,9 @@ namespace Brawlley
         public void SetPlayerViewDirection(Vector2 direction)
         {
             if (direction.x > 0)
-            {
                 viewDirection = PlayerViewDirection.Right;
-            }
             if (direction.x < 0)
-            {
                 viewDirection = PlayerViewDirection.Left;
-            }
         }
         #endregion
     }
