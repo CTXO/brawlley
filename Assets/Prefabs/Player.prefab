@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 5046780081192613675}
   - component: {fileID: 119495432290492261}
   - component: {fileID: 7055159119169957679}
+  - component: {fileID: 8224307219622741284}
   - component: {fileID: 1068871669333204054}
   - component: {fileID: 7455014188447026929}
   - component: {fileID: 6105113381623261611}
-  - component: {fileID: 8224307219622741284}
   - component: {fileID: 1488905058948348492}
   m_Layer: 0
   m_Name: Player
@@ -167,6 +167,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8224307219622741284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693167550192082120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a9e4d113364034f957b29f75e33663, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1068871669333204054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,18 +244,6 @@ MonoBehaviour:
   wallFallingSpeed: 5
   wallJumpStrength: 17
   maxAirJumps: 2
---- !u!114 &8224307219622741284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 693167550192082120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25a9e4d113364034f957b29f75e33663, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1488905058948348492
 MonoBehaviour:
   m_ObjectHideFlags: 0
