@@ -8,10 +8,10 @@ namespace Brawlley.Attacks
         #region Attack Data
         [Header("Attack Data")]
         [SerializeField] float damage = 1f;
-        public float Damage => damage;
+        public float Damage { get => damage; set => damage = value; }
 
         [SerializeField] float knockbackForce = 1f;
-        public float KnockbackForce => knockbackForce;
+        public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
 
         [SerializeField] string ignoreTeam;
         public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
