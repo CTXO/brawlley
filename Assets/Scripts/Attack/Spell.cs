@@ -12,14 +12,23 @@ namespace Brawlley.Attacks
 
         [Header("Events")]
         [SerializeField] UnityEvent onTriggerEnterEvent;
-        Collider2D curretCollision;
+        Collider2D currentCollision;
         #endregion
 
         public void OnTriggerEnter2D(Collider2D collision)
         {
-            curretCollision = collision;
+            currentCollision = collision;
             onTriggerEnterEvent.Invoke();
-            curretCollision = null;
+            currentCollision = null;
+        }
+
+        public void OnPlayerCollisionDealDamage()
+        {
+            if (currentCollision != null && currentCollision.CompareTag("Player"))
+            {
+                if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
+                    playerHealth.Health -= damage;
+            }
         }
     }
 }
