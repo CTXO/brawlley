@@ -14,7 +14,7 @@ public class PlayerHurt : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void GetHit(Vector2 direction)
     {
-        float forceMultiplier = playerHealth.GetHealth();
+        float forceMultiplier = playerHealth.Health;
         playerRb.AddForce(direction * forceMultiplier, ForceMode2D.Impulse);
     }
 
@@ -22,7 +22,7 @@ public class PlayerHurt : MonoBehaviour
     {
         collision.enabled = false;
         collision.gameObject.SetActive(false);
-        playerHealth.SetHealth(10);
-        GetComponent<PlayerHurt>().GetHit((new Vector2(1,1)) * playerHealth.GetHealth()/50);
+        playerHealth.Health -= 10;
+        GetComponent<PlayerHurt>().GetHit((new Vector2(1,1)) * playerHealth.Health/50);
     }
 }
