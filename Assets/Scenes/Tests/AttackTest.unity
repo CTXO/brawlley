@@ -197,6 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7260a414dae02e47be0e0eef3d55d73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
   playerAxis: {fileID: 0}
   team: Practice
 --- !u!50 &677296240
@@ -377,6 +378,7 @@ GameObject:
   - component: {fileID: 1460455199}
   - component: {fileID: 1460455198}
   - component: {fileID: 1460455203}
+  - component: {fileID: 1460455205}
   - component: {fileID: 1460455202}
   - component: {fileID: 1460455204}
   m_Layer: 0
@@ -546,6 +548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7260a414dae02e47be0e0eef3d55d73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerController: {fileID: 1460455205}
   playerAxis: {fileID: 631437865}
   team: Player
 --- !u!114 &1460455204
@@ -565,10 +568,27 @@ MonoBehaviour:
   knockbackForce: 5
   cooldown: 3
   status: 0
+  direction: 1
   spellPrefab: {fileID: 7985505336354202411, guid: f87d272491c18054b98052820ac7db97, type: 3}
   spellSpawnPoint: {fileID: 1133107360}
   castTime: 0.5
   travelSpeed: 5
+  duration: 2
+--- !u!114 &1460455205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460455197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a9e4d113364034f957b29f75e33663, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMovement: {fileID: 0}
+  playerJump: {fileID: 0}
+  playerDash: {fileID: 0}
 --- !u!1 &2106166245
 GameObject:
   m_ObjectHideFlags: 0

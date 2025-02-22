@@ -39,6 +39,8 @@ namespace Brawlley
             if (Status == AttackStatus.Ready)
             {
                 Vector2 attackDirection = GameInputs.Player.Movement.ReadValue<Vector2>();
+                if (attackDirection == Vector2.zero)
+                    attackDirection.x = Direction == AttackDirection.Right ? 1f : -1f;
                 Debug.Log($"Attack Direction: {attackDirection}");
                 GameObject spellObject = Instantiate(spellPrefab, spellSpawnPoint.position, Quaternion.identity);
 
@@ -47,7 +49,9 @@ namespace Brawlley
                 spell.KnockbackForce = KnockbackForce;
                 spell.IgnoreTeam = player.Team;
                 spell.Speed = travelSpeed;
-                spell.ApplyForce(attackDirection);
+                spell.Duration = duration;
+                spell.Direction = attackDirection;
+                spell.ApplyForce();
                 spell.StartDestroyAfterDuration();
 
                 StartCooldown();
