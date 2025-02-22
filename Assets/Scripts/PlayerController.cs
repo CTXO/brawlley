@@ -5,11 +5,13 @@ using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
-    private GameInputs gameInputs;
+    GameInputs gameInputs;
+    public GameInputs GameInputs => gameInputs;
+
     private PlayerMovement playerMovement;
     private PlayerJump playerJump;
     private PlayerDash playerDash;
-    private Vector2 playerDirection;
+    public Vector2 playerDirection;
 
     void Awake()
     {
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         gameInputs.Player.Enable(); // Enable inputs
+        gameInputs.Attack.Enable();
 
         // Subscribe functions to input events
         gameInputs.Player.Movement.performed += SetDirection;
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
         gameInputs.Player.Dash.started -= playerDash.OnDash;
 
         gameInputs.Player.Disable(); // Disable inputs
+        gameInputs.Attack.Disable();
     }
 
     void SetDirection(InputAction.CallbackContext context)
@@ -55,7 +59,7 @@ public class PlayerController : MonoBehaviour
         playerDash.UpdateDirection(playerDirection.normalized);
     }
     
-    //Considerar Apagar se não for usar
+    //Considerar Apagar se nï¿½o for usar
     public Vector2 GetDirection()
     {
         return playerDirection;
