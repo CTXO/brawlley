@@ -5,20 +5,21 @@ namespace Brawlley.Attacks
 {
     public abstract class Attack : MonoBehaviour
     {
-        #region Attack Data
+        #region Data
         [Header("Attack Data")]
         [SerializeField] float damage = 1f;
-        public float Damage { get => damage; set => damage = value; }
-
         [SerializeField] float knockbackForce = 1f;
-        public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
-
         [SerializeField] string ignoreTeam;
-        public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
 
         [Header("Events")]
         [SerializeField] UnityEvent onTriggerEnterEvent;
         protected Collider2D currentCollision;
+        #endregion
+
+        #region Properties
+        public float Damage { get => damage; set => damage = value; }
+        public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
+        public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
         #endregion
 
         #region Collision Methods
@@ -42,6 +43,8 @@ namespace Brawlley.Attacks
 
                     if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
                         playerHealth.Health += damage;
+
+                    Destroy(gameObject);
                 }
 
             }
