@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Brawlley.Player
+namespace Brawlley
 {
     public class Player : MonoBehaviour
     {

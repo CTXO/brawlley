@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Brawlley.Player
+namespace Brawlley
 {
     public enum AttackStatus
     {

@@ -2,7 +2,7 @@ using Brawlley.Attacks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Brawlley.Player
+namespace Brawlley
 {
     public class PlayerSpell : PlayerAttack
     {
