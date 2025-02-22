@@ -17,6 +17,7 @@ public class PlayerDash : MonoBehaviour
     private float dashTime;
     private PlayerSurfaceDetection surfaceDetector;
     private PlayerController controller;
+    GameInputs GameInputs => controller.GameInputs;
 
     public void OnDash(InputAction.CallbackContext context)
     {
@@ -28,19 +29,25 @@ public class PlayerDash : MonoBehaviour
         }
         
     }
-    private void Start()
+    void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
         surfaceDetector = GetComponent<PlayerSurfaceDetection>();
+        GameInputs.Player.Dash.started += OnDash;
     }
 
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (isDashing)
         {
             playerRb.linearVelocity = dashDirection * dashSpeed;
         }
+    }
+
+    void OnDisable()
+    {
+        GameInputs.Player.Dash.started -= OnDash;
     }
 
 

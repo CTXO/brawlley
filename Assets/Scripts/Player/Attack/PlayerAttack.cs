@@ -32,7 +32,7 @@ namespace Brawlley
         #endregion
 
         #region MonoBehaviour Lifecycle Methods
-        protected virtual void Awake()
+        protected virtual void Start()
         {
             if (player == null)
                 player = GetComponent<Player>();

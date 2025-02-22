@@ -23,9 +23,9 @@ namespace Brawlley
         #endregion
 
         #region MonoBehaviour Lifecycle Methods
-        protected override void Awake()
+        protected override void Start()
         {
-            base.Awake();
+            base.Start();
             GameInputs.Attack.Spell.performed += OnAttack;
         }
         #endregion

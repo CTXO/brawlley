@@ -6,6 +6,8 @@ public class PlayerJump : MonoBehaviour
 {
     [Header("Components")]
     private Rigidbody2D playerRb;
+    [SerializeField] PlayerController controller;
+    GameInputs GameInputs => controller.GameInputs;
     private PlayerSurfaceDetection surfaceDetector;
     private PlayerDash dash;
 
@@ -33,12 +35,15 @@ public class PlayerJump : MonoBehaviour
             }
         }
     }
-    void Awake()
+
+    #region MonoBehaviour Lifecycle Methods
+    void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
         surfaceDetector = GetComponent<PlayerSurfaceDetection>();
         dash = GetComponent<PlayerDash>();
         HandleJumpPhysics();
+        GameInputs.Player.Jump.started += OnJump;
     }
 
     private void FixedUpdate()
@@ -58,6 +63,13 @@ public class PlayerJump : MonoBehaviour
 
         HandleFallingSpeed();
     }
+
+    void OnDisable()
+    {
+        GameInputs.Player.Jump.started -= OnJump;
+    }
+    #endregion
+
     private void HandleJumpPhysics()
     {
         float gravity = -(2 * jumpHeight) / (timeToJumpApex * timeToJumpApex);

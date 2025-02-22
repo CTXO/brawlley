@@ -20,7 +20,7 @@ namespace Brawlley
         #endregion
 
         #region MonoBehaviour Lifecycle Methods
-        void Awake()
+        void Start()
         {
             if (playerAxis != null)
                 GameInputs.Player.Movement.performed += UpdateAxisDirection;

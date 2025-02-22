@@ -5,14 +5,24 @@ using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Components
+    [Header("Components")]
     GameInputs gameInputs;
+    [SerializeField] PlayerMovement playerMovement;
+    [SerializeField] PlayerJump playerJump;
+    [SerializeField] PlayerDash playerDash;
+    #endregion
+
+    #region Data
+    Vector2 playerDirection;
+    #endregion
+
+    #region Properties
     public GameInputs GameInputs => gameInputs;
+    public Vector2 PlayerDirection => playerDirection;
+    #endregion
 
-    private PlayerMovement playerMovement;
-    private PlayerJump playerJump;
-    private PlayerDash playerDash;
-    public Vector2 playerDirection;
-
+    #region MonoBehaviour Lifecycle Methods
     void Awake()
     {
         gameInputs = new GameInputs(); // Initialize input system
@@ -33,9 +43,6 @@ public class PlayerController : MonoBehaviour
         // Subscribe functions to input events
         gameInputs.Player.Movement.performed += SetDirection;
         gameInputs.Player.Movement.canceled += SetDirection; // Ensures movement stops when releasing key
-
-        gameInputs.Player.Jump.started += playerJump.OnJump;
-        gameInputs.Player.Dash.started += playerDash.OnDash;
     }
 
     void OnDisable()
@@ -44,19 +51,21 @@ public class PlayerController : MonoBehaviour
         gameInputs.Player.Movement.performed -= SetDirection;
         gameInputs.Player.Movement.canceled -= SetDirection;
 
-        gameInputs.Player.Jump.started -= playerJump.OnJump;
-        gameInputs.Player.Dash.started -= playerDash.OnDash;
-
         gameInputs.Player.Disable(); // Disable inputs
         gameInputs.Attack.Disable();
     }
+    #endregion
 
+    #region Player Controller Methods
     void SetDirection(InputAction.CallbackContext context)
     {
         playerDirection = context.ReadValue<Vector2>();
-        playerMovement.UpdateDirection(playerDirection.x);
-        playerJump.UpdateDirection(Mathf.Min(0, playerDirection.y));
-        playerDash.UpdateDirection(playerDirection.normalized);
+        if (playerMovement != null)
+            playerMovement.UpdateDirection(playerDirection.x);
+        if (playerJump != null)
+            playerJump.UpdateDirection(Mathf.Min(0, playerDirection.y));
+        if (playerDash != null)
+            playerDash.UpdateDirection(playerDirection.normalized);
     }
     
     //Considerar Apagar se n�o for usar
@@ -64,4 +73,5 @@ public class PlayerController : MonoBehaviour
     {
         return playerDirection;
     }
+    #endregion
 }
