@@ -22,8 +22,8 @@ namespace Brawlley.Attacks
         #region Spell Methods
         public void ApplyForce(Vector2 direction)
         {
-            if (spellRigidbody == null)
-                spellRigidbody.AddForce(new Vector2(direction.x, direction.y) * speed, ForceMode2D.Force);
+            if (spellRigidbody != null)
+                spellRigidbody.AddForce(direction * Speed, ForceMode2D.Impulse);
         }
 
         public void OnTagCollisionDestroy(string tag)
@@ -34,7 +34,7 @@ namespace Brawlley.Attacks
 
         IEnumerator DestroyAfterDuration()
         {
-            yield return new WaitForSeconds(duration);
+            yield return new WaitForSeconds(Duration);
             Destroy(gameObject);
         }
 
