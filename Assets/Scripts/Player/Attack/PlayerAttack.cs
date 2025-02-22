@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Brawlley
+namespace Brawlley.Player
 {
     public enum AttackStatus
     {
@@ -15,7 +15,7 @@ namespace Brawlley
         #region Player Attack Resources
         [Header("Player Attack Resources")]
         public Player player;
-        public GameInputs gameInputs;
+        protected GameInputs GameInputs => player.GameInputs;
         #endregion
 
         #region Player Attack Data
@@ -34,13 +34,12 @@ namespace Brawlley
         #region MonoBehaviour Lifecycle Methods
         protected virtual void Awake()
         {
-            gameInputs = new GameInputs();
             if (player == null)
                 player = GetComponent<Player>();
         }
         #endregion
 
-        #region Attack Methods
+        #region Player Attack Methods
         public virtual void OnAttack(InputAction.CallbackContext context) {}
 
         IEnumerator CooldownCoroutine()
@@ -49,7 +48,7 @@ namespace Brawlley
             status = AttackStatus.Ready;
         }
 
-        public void StartCooldown()
+        protected void StartCooldown()
         {
             status = AttackStatus.Cooldown;
             StartCoroutine(CooldownCoroutine());
