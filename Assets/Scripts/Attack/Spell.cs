@@ -5,25 +5,47 @@ namespace Brawlley.Attacks
 {
     public class Spell : Attack
     {
-        #region Spell Resources
+        #region Resources
         [Header("Spell Resources")]
         [SerializeField] Rigidbody2D spellRigidbody;
         #endregion
 
-        #region Spell Data
+        #region Data
         [Header("Spell Data")]
         [SerializeField] float speed = 1f;
-        public float Speed { get => speed; set => speed = value; }
-
         [SerializeField] float duration = 2f;
+        [SerializeField] Vector2 direction;
+        #endregion
+
+        #region Properties
+        public float Speed { get => speed; set => speed = value; }
         public float Duration { get => duration; set => duration = value; }
+        public Vector2 Direction { get => direction; set => direction = value; }
         #endregion
 
         #region Spell Methods
-        public void ApplyForce(Vector2 direction)
+        public void ApplyForce()
         {
             if (spellRigidbody != null)
-                spellRigidbody.AddForce(direction * Speed, ForceMode2D.Impulse);
+                spellRigidbody.AddForce(Direction * Speed, ForceMode2D.Impulse);
+        }
+
+        public virtual void OnPlayerCollisionDealKnockback()
+        {
+            if (currentCollision != null && currentCollision.CompareTag("Player"))
+            {
+                if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
+                {
+                    if (collidedPlayer.Team == IgnoreTeam)
+                        return;
+
+                    if (currentCollision.TryGetComponent<Rigidbody2D>(out var playerRigidbody))
+                        playerRigidbody.AddForce(Direction * KnockbackForce, ForceMode2D.Impulse);
+
+                    Destroy(gameObject);
+                }
+
+            }
         }
 
         public void OnTagCollisionDestroy(string tag)
