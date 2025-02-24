@@ -25,7 +25,7 @@ public class WorldBound : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             PlayerHurt player = collision.gameObject.GetComponent<PlayerHurt>();
-            player.Respawn();
+            player.Die();
         }
         else
         {
