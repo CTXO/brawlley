@@ -14,6 +14,7 @@ namespace Brawlley.Attacks
         [Header("Spell Data")]
         [SerializeField] float speed = 1f;
         //[SerializeField] float duration = 2f;
+        [SerializeField] float timeToActivate = 0.1f;
         [SerializeField] readonly float parriedProjectileVerticalSpeed = 0.6f;
         [SerializeField] readonly float parriedProjectileHeight = 10f;
         [SerializeField] readonly float parriedProjectileHorizontalSpeed = 2f;
@@ -21,6 +22,7 @@ namespace Brawlley.Attacks
 
         private float parriedProjectileVelocity;
         private float gravityScale;
+        private CircleCollider2D spellCollider;
         #endregion
 
         #region Properties
@@ -30,6 +32,25 @@ namespace Brawlley.Attacks
         #endregion
 
         #region Spell Methods
+        private void Start()
+        {
+            spellCollider = GetComponent<CircleCollider2D>();
+            Invoke(nameof(ActivateCollision), timeToActivate);
+        }
+
+        private void ActivateCollision()
+        {
+            spellCollider.enabled = true;
+        }
+
+        private void ApplyGravity()
+        {
+            float gravity = -(2 * parriedProjectileHeight) / (parriedProjectileVerticalSpeed * parriedProjectileVerticalSpeed);
+            gravityScale = gravity / Physics2D.gravity.y;
+            spellRigidbody.gravityScale = gravityScale;
+
+            parriedProjectileVelocity = Mathf.Abs(gravity) * parriedProjectileVerticalSpeed;
+        }
 
         public void ApplyForce()
         {
@@ -42,14 +63,7 @@ namespace Brawlley.Attacks
             ApplyGravity();
             spellRigidbody.linearVelocity = new Vector2(parriedProjectileHorizontalSpeed * direction.x, parriedProjectileVelocity);
         }
-        private void ApplyGravity()
-        {
-            float gravity = -(2 * parriedProjectileHeight) / (parriedProjectileVerticalSpeed * parriedProjectileVerticalSpeed);
-            gravityScale = gravity / Physics2D.gravity.y;
-            spellRigidbody.gravityScale = gravityScale;
-
-            parriedProjectileVelocity = Mathf.Abs(gravity) * parriedProjectileVerticalSpeed;
-        }
+        
         public virtual void OnPlayerCollisionDealKnockback()
         {
             if (currentCollision != null && currentCollision.CompareTag("Player"))
@@ -68,11 +82,11 @@ namespace Brawlley.Attacks
             }
         }
 
-        public void OnTagCollisionDestroy(string tag)
-        {
-            if (currentCollision != null && currentCollision.CompareTag(tag))
-                Destroy(gameObject);
-        }
+        //public void OnTagCollisionDestroy(string tag)
+        //{
+        //    if (currentCollision != null && currentCollision.CompareTag(tag))
+        //        Destroy(gameObject);
+        //}
 
         //IEnumerator DestroyAfterDuration()
         //{

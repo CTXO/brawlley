@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (onGround)
             {
-                RunWithoutAcceleration();
+                RunWithAcceleration();
             }
             else
             {
