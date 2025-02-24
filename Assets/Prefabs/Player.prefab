@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 6105113381623261611}
   - component: {fileID: 1488905058948348492}
   - component: {fileID: 5668962807802555868}
+  - component: {fileID: 2492452853864311512}
+  - component: {fileID: 2241593357746113882}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -275,3 +277,28 @@ MonoBehaviour:
   barrierPrefab: {fileID: 2047825026200983600, guid: ef6d28e333fcbf0458f038412ed097e1, type: 3}
   barrierOffset: 1
   parryCooldown: 1
+--- !u!114 &2492452853864311512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693167550192082120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f37e001c3c410344a63ab4730d99dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2241593357746113882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693167550192082120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62d45ad3596cb6d4ebf271dd452b99df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 0

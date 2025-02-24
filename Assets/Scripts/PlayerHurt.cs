@@ -20,9 +20,15 @@ public class PlayerHurt : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        collision.enabled = false;
-        collision.gameObject.SetActive(false);
+        Debug.Log("Entrou");
         playerHealth.Health -= 10;
         GetComponent<PlayerHurt>().GetHit((new Vector2(1,1)) * playerHealth.Health/50);
+    }
+
+    public void Respawn()
+    {
+        playerHealth.Health = playerHealth.InitialHealth;
+        transform.position = new Vector3(0, 3, 0);
+        playerRb.linearVelocity = Vector2.zero;
     }
 }
