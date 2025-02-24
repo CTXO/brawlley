@@ -13,23 +13,43 @@ namespace Brawlley.Attacks
         #region Data
         [Header("Spell Data")]
         [SerializeField] float speed = 1f;
-        [SerializeField] float duration = 2f;
+        //[SerializeField] float duration = 2f;
+        [SerializeField] readonly float parriedProjectileVerticalSpeed = 0.6f;
+        [SerializeField] readonly float parriedProjectileHeight = 10f;
+        [SerializeField] readonly float parriedProjectileHorizontalSpeed = 2f;
         [SerializeField] Vector2 direction;
+
+        private float parriedProjectileVelocity;
+        private float gravityScale;
         #endregion
 
         #region Properties
         public float Speed { get => speed; set => speed = value; }
-        public float Duration { get => duration; set => duration = value; }
+        //public float Duration { get => duration; set => duration = value; }
         public Vector2 Direction { get => direction; set => direction = value; }
         #endregion
 
         #region Spell Methods
+
         public void ApplyForce()
         {
             if (spellRigidbody != null)
                 spellRigidbody.AddForce(Direction * Speed, ForceMode2D.Impulse);
         }
 
+        public void Parry()
+        {
+            ApplyGravity();
+            spellRigidbody.linearVelocity = new Vector2(parriedProjectileHorizontalSpeed * direction.x, parriedProjectileVelocity);
+        }
+        private void ApplyGravity()
+        {
+            float gravity = -(2 * parriedProjectileHeight) / (parriedProjectileVerticalSpeed * parriedProjectileVerticalSpeed);
+            gravityScale = gravity / Physics2D.gravity.y;
+            spellRigidbody.gravityScale = gravityScale;
+
+            parriedProjectileVelocity = Mathf.Abs(gravity) * parriedProjectileVerticalSpeed;
+        }
         public virtual void OnPlayerCollisionDealKnockback()
         {
             if (currentCollision != null && currentCollision.CompareTag("Player"))
@@ -54,19 +74,19 @@ namespace Brawlley.Attacks
                 Destroy(gameObject);
         }
 
-        IEnumerator DestroyAfterDuration()
-        {
-            yield return new WaitForSeconds(Duration);
-            Destroy(gameObject);
-        }
+        //IEnumerator DestroyAfterDuration()
+        //{
+        //    yield return new WaitForSeconds(Duration);
+        //    Destroy(gameObject);
+        //}
 
-        public void StartDestroyAfterDuration() => StartCoroutine(DestroyAfterDuration());
+        //public void StartDestroyAfterDuration() => StartCoroutine(DestroyAfterDuration());
 
-        public void ResetDestroyAfterDuration()
-        {
-            StopCoroutine(DestroyAfterDuration());
-            StartCoroutine(DestroyAfterDuration());
-        }
+        //public void ResetDestroyAfterDuration()
+        //{
+        //    StopCoroutine(DestroyAfterDuration());
+        //    StartCoroutine(DestroyAfterDuration());
+        //}
         #endregion
     }
 }

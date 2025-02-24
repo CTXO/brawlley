@@ -51,20 +51,20 @@ public class PlayerSurfaceDetection : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        // Draw the ground detection rays
-        Gizmos.color = onGround ? Color.green : Color.red;
-        Gizmos.DrawLine(transform.position + groundOffset, transform.position + groundOffset + Vector3.down * groundLength);
-        Gizmos.DrawLine(transform.position - groundOffset, transform.position - groundOffset + Vector3.down * groundLength);
+    //private void OnDrawGizmos()
+    //{
+    //    // Draw the ground detection rays
+    //    Gizmos.color = onGround ? Color.green : Color.red;
+    //    Gizmos.DrawLine(transform.position + groundOffset, transform.position + groundOffset + Vector3.down * groundLength);
+    //    Gizmos.DrawLine(transform.position - groundOffset, transform.position - groundOffset + Vector3.down * groundLength);
 
-        // Draw the wall detection rays
-        Gizmos.color = onWall ? Color.blue : Color.red;
-        Gizmos.DrawLine(transform.position + wallOffset, transform.position + wallOffset + facingDirection.x * wallLength * Vector3.right);
-        Gizmos.DrawLine(transform.position - wallOffset , transform.position - wallOffset + facingDirection.x * wallLength * Vector3.right);
+    //    // Draw the wall detection rays
+    //    Gizmos.color = onWall ? Color.blue : Color.red;
+    //    Gizmos.DrawLine(transform.position + wallOffset, transform.position + wallOffset + facingDirection.x * wallLength * Vector3.right);
+    //    Gizmos.DrawLine(transform.position - wallOffset , transform.position - wallOffset + facingDirection.x * wallLength * Vector3.right);
 
 
-    }
+    //}
 
     //Send ground detection to other scripts
     public bool GetOnGround() { return onGround; }

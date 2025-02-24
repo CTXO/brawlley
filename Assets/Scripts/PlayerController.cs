@@ -8,9 +8,10 @@ public class PlayerController : MonoBehaviour
     #region Components
     [Header("Components")]
     GameInputs gameInputs;
-    [SerializeField] PlayerMovement playerMovement;
-    [SerializeField] PlayerJump playerJump;
-    [SerializeField] PlayerDash playerDash;
+    private PlayerMovement playerMovement;
+    private PlayerJump playerJump;
+    private PlayerDash playerDash;
+    private PlayerParry playerParry;
     #endregion
 
     #region Data
@@ -31,18 +32,23 @@ public class PlayerController : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerDash = GetComponent<PlayerDash>();
         playerMovement = GetComponent<PlayerMovement>();
-        Debug.Log("PlayerController Awake: " + gameObject.activeSelf);
+        playerParry = GetComponent<PlayerParry>();
 
     }
 
     void OnEnable()
     {
         gameInputs.Player.Enable(); // Enable inputs
-        gameInputs.Attack.Enable();
+        gameInputs.Skill.Enable();
 
         // Subscribe functions to input events
         gameInputs.Player.Movement.performed += SetDirection;
         gameInputs.Player.Movement.canceled += SetDirection; // Ensures movement stops when releasing key
+
+        gameInputs.Player.Jump.started += playerJump.OnJump;
+        gameInputs.Player.Dash.started += playerDash.OnDash;
+
+        gameInputs.Skill.Parry.started += playerParry.OnParry;
     }
 
     void OnDisable()
@@ -51,8 +57,13 @@ public class PlayerController : MonoBehaviour
         gameInputs.Player.Movement.performed -= SetDirection;
         gameInputs.Player.Movement.canceled -= SetDirection;
 
+        gameInputs.Player.Jump.started -= playerJump.OnJump;
+        gameInputs.Player.Dash.started -= playerDash.OnDash;
+
+        gameInputs.Skill.Parry.started -= playerParry.OnParry;
+
         gameInputs.Player.Disable(); // Disable inputs
-        gameInputs.Attack.Disable();
+        gameInputs.Skill.Disable();
     }
     #endregion
 
@@ -60,12 +71,10 @@ public class PlayerController : MonoBehaviour
     void SetDirection(InputAction.CallbackContext context)
     {
         playerDirection = context.ReadValue<Vector2>();
-        if (playerMovement != null)
-            playerMovement.UpdateDirection(playerDirection.x);
-        if (playerJump != null)
-            playerJump.UpdateDirection(Mathf.Min(0, playerDirection.y));
-        if (playerDash != null)
-            playerDash.UpdateDirection(playerDirection.normalized);
+        if (playerMovement != null) { playerMovement.UpdateDirection(playerDirection.x); }
+        if (playerJump != null) { playerJump.UpdateDirection(Mathf.Min(0, playerDirection.y)); }
+        if (playerDash != null) { playerDash.UpdateDirection(playerDirection.normalized); }  
+
     }
     
     //Considerar Apagar se n�o for usar

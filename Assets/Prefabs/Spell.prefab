@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 157156168278266503}
   - component: {fileID: 2704434569683138440}
   - component: {fileID: 7261107104673086597}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Spell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -197,5 +197,4 @@ MonoBehaviour:
         m_CallState: 2
   spellRigidbody: {fileID: 157156168278266503}
   speed: 1
-  duration: 2
   direction: {x: 0, y: 0}

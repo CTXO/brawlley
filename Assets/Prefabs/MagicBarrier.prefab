@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4193769318885330981}
   - component: {fileID: 5601380905896790016}
   - component: {fileID: 803596796765330686}
+  - component: {fileID: 5568572919204251960}
   m_Layer: 6
   m_Name: MagicBarrier
   m_TagString: Untagged
@@ -208,4 +209,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e34765ed71b9f4ebf8cf6af58fe979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 10
+  lifetime: 5
+  parryCollider: {fileID: 1193723882740255573}
+  wallCollider: {fileID: 5601380905896790016}
+  instantiationTime: 0
+--- !u!50 &5568572919204251960
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047825026200983600}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDamping: 0
+  m_AngularDamping: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7

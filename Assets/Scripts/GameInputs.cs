@@ -202,7 +202,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""Attack"",
+            ""name"": ""Skill"",
             ""id"": ""8bcfb0fa-a031-486d-a92e-652b275f9ddb"",
             ""actions"": [
                 {
@@ -218,6 +218,15 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""name"": ""Spell"",
                     ""type"": ""Button"",
                     ""id"": ""1bbad25d-1756-424a-9e07-e064075ae866"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Parry"",
+                    ""type"": ""Button"",
+                    ""id"": ""8f3a7acf-520e-4d38-9901-e44e029d64fa"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -257,6 +266,17 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Melee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9014883a-a5f0-47bd-849c-933c4bb3579f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Parry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -280,16 +300,17 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
-        // Attack
-        m_Attack = asset.FindActionMap("Attack", throwIfNotFound: true);
-        m_Attack_Melee = m_Attack.FindAction("Melee", throwIfNotFound: true);
-        m_Attack_Spell = m_Attack.FindAction("Spell", throwIfNotFound: true);
+        // Skill
+        m_Skill = asset.FindActionMap("Skill", throwIfNotFound: true);
+        m_Skill_Melee = m_Skill.FindAction("Melee", throwIfNotFound: true);
+        m_Skill_Spell = m_Skill.FindAction("Spell", throwIfNotFound: true);
+        m_Skill_Parry = m_Skill.FindAction("Parry", throwIfNotFound: true);
     }
 
     ~@GameInputs()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, GameInputs.Player.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_Attack.enabled, "This will cause a leak and performance issues, GameInputs.Attack.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Skill.enabled, "This will cause a leak and performance issues, GameInputs.Skill.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -410,35 +431,40 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
     }
     public PlayerActions @Player => new PlayerActions(this);
 
-    // Attack
-    private readonly InputActionMap m_Attack;
-    private List<IAttackActions> m_AttackActionsCallbackInterfaces = new List<IAttackActions>();
-    private readonly InputAction m_Attack_Melee;
-    private readonly InputAction m_Attack_Spell;
-    public struct AttackActions
+    // Skill
+    private readonly InputActionMap m_Skill;
+    private List<ISkillActions> m_SkillActionsCallbackInterfaces = new List<ISkillActions>();
+    private readonly InputAction m_Skill_Melee;
+    private readonly InputAction m_Skill_Spell;
+    private readonly InputAction m_Skill_Parry;
+    public struct SkillActions
     {
         private @GameInputs m_Wrapper;
-        public AttackActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Melee => m_Wrapper.m_Attack_Melee;
-        public InputAction @Spell => m_Wrapper.m_Attack_Spell;
-        public InputActionMap Get() { return m_Wrapper.m_Attack; }
+        public SkillActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Melee => m_Wrapper.m_Skill_Melee;
+        public InputAction @Spell => m_Wrapper.m_Skill_Spell;
+        public InputAction @Parry => m_Wrapper.m_Skill_Parry;
+        public InputActionMap Get() { return m_Wrapper.m_Skill; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(AttackActions set) { return set.Get(); }
-        public void AddCallbacks(IAttackActions instance)
+        public static implicit operator InputActionMap(SkillActions set) { return set.Get(); }
+        public void AddCallbacks(ISkillActions instance)
         {
-            if (instance == null || m_Wrapper.m_AttackActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_AttackActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_SkillActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SkillActionsCallbackInterfaces.Add(instance);
             @Melee.started += instance.OnMelee;
             @Melee.performed += instance.OnMelee;
             @Melee.canceled += instance.OnMelee;
             @Spell.started += instance.OnSpell;
             @Spell.performed += instance.OnSpell;
             @Spell.canceled += instance.OnSpell;
+            @Parry.started += instance.OnParry;
+            @Parry.performed += instance.OnParry;
+            @Parry.canceled += instance.OnParry;
         }
 
-        private void UnregisterCallbacks(IAttackActions instance)
+        private void UnregisterCallbacks(ISkillActions instance)
         {
             @Melee.started -= instance.OnMelee;
             @Melee.performed -= instance.OnMelee;
@@ -446,23 +472,26 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             @Spell.started -= instance.OnSpell;
             @Spell.performed -= instance.OnSpell;
             @Spell.canceled -= instance.OnSpell;
+            @Parry.started -= instance.OnParry;
+            @Parry.performed -= instance.OnParry;
+            @Parry.canceled -= instance.OnParry;
         }
 
-        public void RemoveCallbacks(IAttackActions instance)
+        public void RemoveCallbacks(ISkillActions instance)
         {
-            if (m_Wrapper.m_AttackActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_SkillActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IAttackActions instance)
+        public void SetCallbacks(ISkillActions instance)
         {
-            foreach (var item in m_Wrapper.m_AttackActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_SkillActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_AttackActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_SkillActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public AttackActions @Attack => new AttackActions(this);
+    public SkillActions @Skill => new SkillActions(this);
     private int m_DefaultSchemeIndex = -1;
     public InputControlScheme DefaultScheme
     {
@@ -478,9 +507,10 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
     }
-    public interface IAttackActions
+    public interface ISkillActions
     {
         void OnMelee(InputAction.CallbackContext context);
         void OnSpell(InputAction.CallbackContext context);
+        void OnParry(InputAction.CallbackContext context);
     }
 }

@@ -29,7 +29,7 @@ namespace Brawlley
         protected override void Start()
         {
             base.Start();
-            GameInputs.Attack.Spell.performed += OnAttack;
+            GameInputs.Skill.Spell.performed += OnAttack;
         }
         #endregion
 
@@ -49,10 +49,10 @@ namespace Brawlley
                 spell.KnockbackForce = KnockbackForce;
                 spell.IgnoreTeam = player.Team;
                 spell.Speed = travelSpeed;
-                spell.Duration = duration;
+                //spell.Duration = duration;
                 spell.Direction = attackDirection;
                 spell.ApplyForce();
-                spell.StartDestroyAfterDuration();
+                //spell.StartDestroyAfterDuration();
 
                 StartCooldown();
             }

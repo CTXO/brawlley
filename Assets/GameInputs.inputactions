@@ -180,7 +180,7 @@
             ]
         },
         {
-            "name": "Attack",
+            "name": "Skill",
             "id": "8bcfb0fa-a031-486d-a92e-652b275f9ddb",
             "actions": [
                 {
@@ -196,6 +196,15 @@
                     "name": "Spell",
                     "type": "Button",
                     "id": "1bbad25d-1756-424a-9e07-e064075ae866",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Parry",
+                    "type": "Button",
+                    "id": "8f3a7acf-520e-4d38-9901-e44e029d64fa",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -233,6 +242,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Melee",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9014883a-a5f0-47bd-849c-933c4bb3579f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Parry",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
