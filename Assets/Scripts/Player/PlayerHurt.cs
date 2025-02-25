@@ -14,14 +14,14 @@ public class PlayerHurt : MonoBehaviour
         playerHealth = GetComponent<PlayerHealth>();
         gameManager = FindAnyObjectByType<GameManager>();
     }
-    
+
     public void GetHit(Vector2 direction)
     {
-        playerHealth.Health += 10; // quanto maior a saúde, maior é o empurrão (pouco intuitivo), mas é o como funciona
+        playerHealth.Health += 10; // quanto maior a saï¿½de, maior ï¿½ o empurrï¿½o (pouco intuitivo), mas ï¿½ o como funciona
         playerRb.linearVelocity = direction * playerHealth.Health;
     }
 
-    // Lidar quando o jogador é atingido por um projétil
+    // Lidar quando o jogador ï¿½ atingido por um projï¿½til
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Spell spell = collision.GetComponent<Spell>();
@@ -40,7 +40,7 @@ public class PlayerHurt : MonoBehaviour
     public void Die()
     {
         playerHealth.Lives--;
-        if (playerHealth.Lives <= 0) { gameManager.HandlePlayerElimination(); }
+        if (playerHealth.Lives <= 0) { gameManager.HandlePlayerElimination(this.gameObject); }
         else { Respawn(); }
     }
 
