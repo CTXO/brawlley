@@ -808,9 +808,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5653044457150190645, guid: 2ad52fc3931928d46bc7aae762531ab5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7455014188447026929, guid: 2ad52fc3931928d46bc7aae762531ab5, type: 3}
       propertyPath: maxAcceleration
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7728585745231249102, guid: 2ad52fc3931928d46bc7aae762531ab5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
