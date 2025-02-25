@@ -3,15 +3,18 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] int playerLives = 3;
-    [SerializeField] float initialHealth;
-    private float health;
+    private float damage;
 
     private void Start()
     {
-        health = initialHealth;
+        ResetHealth();
     }
-    public float Health { get => health; set => health = value; }
-    public float InitialHealth { get => initialHealth; }
+
+    public void ResetHealth()
+    {
+        damage = 0;
+    }
+    public float Damage { get => damage; set => damage = value; }
 
     public int Lives { get => playerLives; set => playerLives = value; }
 }

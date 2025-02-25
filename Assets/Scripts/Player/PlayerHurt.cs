@@ -17,8 +17,11 @@ public class PlayerHurt : MonoBehaviour
 
     public void GetHit(Vector2 direction)
     {
-        playerHealth.Health += 10; // quanto maior a sa�de, maior � o empurr�o (pouco intuitivo), mas � o como funciona
-        playerRb.linearVelocity = direction * playerHealth.Health;
+        playerHealth.Damage += 10; // quanto maior a sa�de, maior � o empurr�o (pouco intuitivo), mas � o como funciona
+        
+        gameManager.HandlePlayerDamage(playerHealth.Damage);
+
+        playerRb.linearVelocity = direction * playerHealth.Damage;
     }
 
     // Lidar quando o jogador � atingido por um proj�til
@@ -33,15 +36,16 @@ public class PlayerHurt : MonoBehaviour
     }
     private void Respawn()
     {
-        playerHealth.Health = playerHealth.InitialHealth;
+        playerHealth.ResetHealth();
         playerRb.linearVelocity = Vector2.zero;
         transform.position = new Vector3(0, 3, 0);
     }
     public void Die()
     {
         playerHealth.Lives--;
-        if (playerHealth.Lives <= 0) { gameManager.HandlePlayerElimination(this.gameObject); }
-        else { Respawn(); }
+        gameManager.HandlePlayerDeath(this.gameObject, playerHealth.Lives);
+
+        if (playerHealth.Lives > 0) { Respawn(); }
     }
 
 }
