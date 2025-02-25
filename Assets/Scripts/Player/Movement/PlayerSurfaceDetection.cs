@@ -29,11 +29,12 @@ public class PlayerSurfaceDetection : MonoBehaviour
         groundOffset = new Vector3(colliderOffset.x, 0, 0);
         wallOffset = new Vector3(0, colliderOffset.y, 0);
         previousGroundCheck = onGround;
+        facingDirection = new Vector2(transform.localScale.x, 0);
     }
 
     private void Update()
     {
-        facingDirection = new Vector2(transform.localScale.x, 0);
+        facingDirection.x = transform.localScale.x;
     }
 
     private void FixedUpdate()

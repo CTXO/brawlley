@@ -23,13 +23,13 @@ public class MagicBarrier : MonoBehaviour
         if (parryCollider.IsTouching(collision))
         {
             spell.Parry();
+            return;
         }
-        else if (wallCollider.IsTouching(collision))
-        {
-            //Precisa Trabalhar Isso Depois
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
-        }
+        
+        //Precisa Trabalhar Isso Depois
+        Destroy(collision.gameObject);
+        Destroy(gameObject);
+        
     }
 
     // Usando OnCollisionEnter2D para lidar com as colisões entre barreiras
