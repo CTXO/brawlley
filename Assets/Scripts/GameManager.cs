@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,11 +6,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private List<GameObject> players;
+    [SerializeField]private float time = 60;
 
     private void Start()
     {
         // Inicializa a lista de jogadores buscando todos os objetos com a tag "Player"
         players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        StartCoroutine(TimerCoroutine());
     }
     private void HandlePlayerElimination(GameObject eliminatedPlayer)
     {
@@ -24,13 +27,32 @@ public class GameManager : MonoBehaviour
 
         if (activePlayers == 1)
         {
-            GameOver();
+            HandleGameOver();
         }
     }
 
-    private void GameOver()
+    // Copiei e colei um timer que eu tinha feito para outro projeto
+    private IEnumerator TimerCoroutine()
+    {
+        while (time > 0)
+        {
+            //timerText.text = "Time: " + Mathf.Round(time);
+            yield return null;
+            time -= Time.deltaTime;
+        }
+
+        //timerText.text = "Time: 0";
+        HandleTimeout();
+    }
+
+    private void HandleGameOver()
     {
         Debug.Log("Game Over! O último jogador venceu.");
+    }
+
+    private void HandleTimeout()
+    {
+
     }
 
     // Lógica para atualizar a GUI quando o player tomar dano
