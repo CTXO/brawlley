@@ -42,7 +42,7 @@ namespace Brawlley.Attacks
                         return;
 
                     if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
-                        playerHealth.Health += damage;
+                        playerHealth.Damage += damage;
 
                     Destroy(gameObject);
                 }
