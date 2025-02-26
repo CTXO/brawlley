@@ -35,6 +35,10 @@ public class PlayerMovement : MonoBehaviour
     private bool onGround;
     private bool onWall;
     private bool pressingKey;
+    private bool canMove;
+
+    public bool CanMove { get => canMove; set => canMove = value; }
+    public float Direction { set => directionX = value; }
 
     private void Awake()
     {
@@ -45,14 +49,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        //Used to stop movement when the character is playing her death animation
-        //if (!movementLimiter.instance.CharacterCanMove)
-        //{
-        //    directionX = 0;
-        //}
+        if (!canMove) { return; }
 
-        //Used to flip the character's sprite when she changes direction
-        //Also tells us that we are currently pressing a direction button
         if (directionX != 0)
         {
             transform.localScale = new Vector3(directionX > 0 ? 1 : -1, 1, 1);
@@ -152,8 +150,4 @@ public class PlayerMovement : MonoBehaviour
         playerRb.linearVelocity = velocity;
     }
 
-    public void UpdateDirection(float newDirection)
-    {
-        directionX = newDirection;
-    }
 }

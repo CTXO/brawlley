@@ -22,7 +22,7 @@ namespace Brawlley
         protected override void Start()
         {
             base.Start();
-            GameInputs.Skill.Spell.performed += OnAttack;
+            GameInputs.Skill.Spell.canceled += OnAttack;
         }
         #endregion
 

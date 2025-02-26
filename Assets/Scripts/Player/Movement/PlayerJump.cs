@@ -1,4 +1,5 @@
 using NUnit.Framework.Constraints;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,16 +24,17 @@ public class PlayerJump : MonoBehaviour
     private float gravityScale;
     private float verticalDirection;
 
+    public float Direction { set => verticalDirection = value; }
     public void OnJump(InputAction.CallbackContext context)
-    {
-        if (context.started)
         {
-            if (JumpsRemaining > 0)
+            if (context.started)
             {
-                DoAJump();
+                if (JumpsRemaining > 0)
+                {
+                    DoAJump();
+                }
             }
         }
-    }
 
     #region MonoBehaviour Lifecycle Methods
     void Start()
@@ -46,7 +48,7 @@ public class PlayerJump : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (dash.GetIsDashing())
+        if (dash.IsDashing)
         {
             playerRb.gravityScale = 0;
             return;
@@ -98,10 +100,4 @@ public class PlayerJump : MonoBehaviour
                                      + verticalDirection * fallingSpeedModifier;
         }
     }
-    
-    public void UpdateDirection(float isPressingDown)
-    {
-        verticalDirection = isPressingDown;
-     }
-
 }

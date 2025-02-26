@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour
         gameInputs.Player.Jump.started += playerJump.OnJump;
         gameInputs.Player.Dash.started += playerDash.OnDash;
 
+        gameInputs.Skill.Spell.started += OnAiming;
+        gameInputs.Skill.Spell.canceled += OnStopAiming;
+
         gameInputs.Skill.Parry.started += playerParry.OnParry;
     }
 
@@ -59,6 +62,9 @@ public class PlayerController : MonoBehaviour
 
         gameInputs.Player.Jump.started -= playerJump.OnJump;
         gameInputs.Player.Dash.started -= playerDash.OnDash;
+        
+        gameInputs.Skill.Spell.started -= OnAiming;
+        gameInputs.Skill.Spell.canceled -= OnStopAiming;
 
         gameInputs.Skill.Parry.started -= playerParry.OnParry;
 
@@ -71,12 +77,28 @@ public class PlayerController : MonoBehaviour
     void SetDirection(InputAction.CallbackContext context)
     {
         playerDirection = context.ReadValue<Vector2>();
-        if (playerMovement != null) { playerMovement.UpdateDirection(playerDirection.x); }
-        if (playerJump != null) { playerJump.UpdateDirection(Mathf.Min(0, playerDirection.y)); }
-        if (playerDash != null) { playerDash.UpdateDirection(playerDirection.normalized); }  
+        if (playerMovement != null) { playerMovement.Direction = playerDirection.x; }
+        if (playerJump != null) { playerJump.Direction = Mathf.Min(0, playerDirection.y); }
+        if (playerDash != null) { playerDash.Direction = playerDirection.normalized; }  
 
     }
-    
+
+    void OnAiming(InputAction.CallbackContext context)
+    {
+        gameInputs.Player.Jump.started -= playerJump.OnJump;
+        gameInputs.Player.Dash.started -= playerDash.OnDash;
+        gameInputs.Skill.Parry.started -= playerParry.OnParry;
+        playerMovement.CanMove = false;
+    }
+
+    void OnStopAiming(InputAction.CallbackContext context)
+    {
+        gameInputs.Player.Jump.started += playerJump.OnJump;
+        gameInputs.Player.Dash.started += playerDash.OnDash;
+        gameInputs.Skill.Parry.started += playerParry.OnParry;
+        playerMovement.CanMove = true;
+    }
+
     //Considerar Apagar se n�o for usar
     public Vector2 GetDirection()
     {

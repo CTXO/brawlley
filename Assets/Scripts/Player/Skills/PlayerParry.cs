@@ -22,7 +22,7 @@ public class PlayerParry : MonoBehaviour
     public void OnParry(InputAction.CallbackContext context)
     {
         // O player só pode subir uma barreira no chão ou se der um Dash neutro (Gravity Cancel)
-        if (context.started && canParry && (surfaceDetector.GetOnGround() || dash.GetGravityCancel()))
+        if (context.started && canParry && (surfaceDetector.GetOnGround() || dash.GravityCancel))
         {
             SummonBarrier();
             StartCoroutine(Cooldown());

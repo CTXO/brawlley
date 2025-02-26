@@ -17,6 +17,10 @@ public class PlayerDash : MonoBehaviour
     private float dashTime;
     private PlayerSurfaceDetection surfaceDetector;
 
+    public Vector2 Direction { set => inputDirection = value; }
+    public bool IsDashing { get => isDashing; }
+    public bool GravityCancel { get => isDashing && dashDirection == Vector2.zero; }
+    
     public void OnDash(InputAction.CallbackContext context)
     {
         if (isDashing || !canDash) return;
@@ -68,11 +72,5 @@ public class PlayerDash : MonoBehaviour
         canDash = true;
     }
 
-    public void UpdateDirection(Vector2 direction)
-    {
-        inputDirection = direction;
-    }
-
-    public bool GetGravityCancel() { return isDashing && dashDirection == Vector2.zero; }
-    public bool GetIsDashing() { return isDashing; }
+    
 }
