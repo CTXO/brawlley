@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     private bool onGround;
     private bool onWall;
     private bool pressingKey;
-    private bool canMove;
+    private bool canMove = true;
 
     public bool CanMove { get => canMove; set => canMove = value; }
     public float Direction { set => directionX = value; }
@@ -49,7 +49,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (!canMove) { return; }
+        if (!canMove) 
+        {
+            desiredVelocity = Vector2.zero;
+            return; 
+        }
 
         if (directionX != 0)
         {
