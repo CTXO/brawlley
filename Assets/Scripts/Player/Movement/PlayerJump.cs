@@ -81,7 +81,7 @@ public class PlayerJump : MonoBehaviour
             playerRb.linearVelocity = new Vector2(-wallJumpStrength * surfaceDetector.GetFacingDirection(), jumpSpeed);
         }
 
-        playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, jumpSpeed);
+        playerRb.linearVelocityY = jumpSpeed;
 
         JumpsRemaining--;
     }

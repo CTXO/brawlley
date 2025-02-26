@@ -73,34 +73,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Fixed update runs in sync with Unity's physics engine
-
-        //Get Kit's current ground status from her ground script
-        onGround = surfaceDetector.GetOnGround();
         onWall = surfaceDetector.GetOnWall();
-
-        //Get the Rigidbody's current velocity
         velocity = playerRb.linearVelocity;
 
-        //Calculate movement, depending on whether "Instant Movement" has been checked
-
-        if (useAcceleration)
-        {
-            RunWithAcceleration();
-        }
-        else
-        {
-            if (onGround)
-            {
-                RunWithAcceleration();
-            }
-            else
-            {
-                RunWithAcceleration();
-            }
-
-        }
-       
+        RunWithAcceleration();
     }
 
     private void RunWithAcceleration()
