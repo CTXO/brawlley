@@ -30,7 +30,7 @@ public class PlayerHurt : MonoBehaviour
         Spell spell = collision.GetComponent<Spell>();
         if (spell == null) { return; }
 
-        GetHit(spell.Direction);
+        GetHit(spell.direction);
 
         Destroy(collision.gameObject);
     }

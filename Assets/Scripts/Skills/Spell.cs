@@ -12,23 +12,16 @@ namespace Brawlley.Attacks
 
         #region Data
         [Header("Spell Data")]
-        [SerializeField] float speed = 1f;
-        //[SerializeField] float duration = 2f;
-        [SerializeField] float timeToActivate = 0.1f;
+        public float speed = 1f;
+        public float timeToActivate = 0.1f;
+        public Vector2 direction;
         [SerializeField] readonly float parriedProjectileVerticalSpeed = 0.6f;
         [SerializeField] readonly float parriedProjectileHeight = 10f;
         [SerializeField] readonly float parriedProjectileHorizontalSpeed = 2f;
-        [SerializeField] Vector2 direction;
 
         private float parriedProjectileVelocity;
         private float gravityScale;
         private CircleCollider2D spellCollider;
-        #endregion
-
-        #region Properties
-        public float Speed { get => speed; set => speed = value; }
-        //public float Duration { get => duration; set => duration = value; }
-        public Vector2 Direction { get => direction; set => direction = value; }
         #endregion
 
         #region Spell Methods
@@ -55,7 +48,7 @@ namespace Brawlley.Attacks
         public void ApplyForce()
         {
             if (spellRigidbody != null)
-                spellRigidbody.AddForce(Direction * Speed, ForceMode2D.Impulse);
+                spellRigidbody.AddForce(direction * speed, ForceMode2D.Impulse);
         }
 
         public void Parry()
@@ -70,11 +63,11 @@ namespace Brawlley.Attacks
             {
                 if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
                 {
-                    if (collidedPlayer.Team == IgnoreTeam)
+                    if (collidedPlayer.Team == ignoreTeam)
                         return;
 
                     if (currentCollision.TryGetComponent<Rigidbody2D>(out var playerRigidbody))
-                        playerRigidbody.AddForce(Direction * KnockbackForce, ForceMode2D.Impulse);
+                        playerRigidbody.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
 
                     Destroy(gameObject);
                 }

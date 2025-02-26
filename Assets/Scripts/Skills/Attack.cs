@@ -7,19 +7,13 @@ namespace Brawlley.Attacks
     {
         #region Data
         [Header("Attack Data")]
-        [SerializeField] float damage = 1f;
-        [SerializeField] float knockbackForce = 1f;
-        [SerializeField] string ignoreTeam;
+        public float damage = 1f;
+        public float knockbackForce = 1f;
+        public string ignoreTeam;
 
         [Header("Events")]
         [SerializeField] UnityEvent onTriggerEnterEvent;
         protected Collider2D currentCollision;
-        #endregion
-
-        #region Properties
-        public float Damage { get => damage; set => damage = value; }
-        public float KnockbackForce { get => knockbackForce; set => knockbackForce = value; }
-        public string IgnoreTeam { get => ignoreTeam; set => ignoreTeam = value; }
         #endregion
 
         #region Collision Methods
@@ -38,7 +32,7 @@ namespace Brawlley.Attacks
             {
                 if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
                 {
-                    if (collidedPlayer.Team == IgnoreTeam)
+                    if (collidedPlayer.Team == ignoreTeam)
                         return;
 
                     if (currentCollision.TryGetComponent<PlayerHealth>(out var playerHealth))
