@@ -45,6 +45,12 @@ namespace Brawlley.Attacks
             parriedProjectileVelocity = Mathf.Abs(gravity) * parriedProjectileVerticalSpeed;
         }
 
+        public void ApplyGravity(float gravity)
+        {
+            if (spellRigidbody == null) return;
+            spellRigidbody.gravityScale = gravity;
+        }
+
         public void ApplyForce()
         {
             if (spellRigidbody != null)
