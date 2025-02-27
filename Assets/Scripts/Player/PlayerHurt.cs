@@ -19,7 +19,7 @@ public class PlayerHurt : MonoBehaviour
     {
         playerHealth.Damage += 10; // quanto maior a sa�de, maior � o empurr�o (pouco intuitivo), mas � o como funciona
         
-        gameManager.HandlePlayerDamage(playerHealth.Damage);
+        gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
 
         playerRb.linearVelocity = direction * playerHealth.Damage;
     }

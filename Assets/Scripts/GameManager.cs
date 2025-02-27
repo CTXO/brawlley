@@ -57,9 +57,9 @@ public class GameManager : MonoBehaviour
 
     // Lógica para atualizar a GUI quando o player tomar dano
     // Passando o valor do dano para poder usar ele como parâmetro para ajustar a cor
-    public void HandlePlayerDamage(float damage)
+    public void HandlePlayerDamage(GameObject player, float damage)
     {
-
+        
     }
 
     // Lógica para atualizar a GUI quando o player morrer 
@@ -68,5 +68,5 @@ public class GameManager : MonoBehaviour
         if (lives <= 0) { HandlePlayerElimination(player); }
     }
 
-    
+    //PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
 }
