@@ -6,14 +6,16 @@ public class PlayerSurfaceDetection : MonoBehaviour
     private bool onGround;
     private bool onWall;
     private bool previousGroundCheck;
+    private float previousVelocity;
     private Vector2 facingDirection;
     private Vector3 groundOffset;
     private Vector3 wallOffset;
+    private Rigidbody2D playerRb;
     [SerializeField] private BoxCollider2D playerCollider;
-    [SerializeField] private Vector2 colliderSizeGround;
-    [SerializeField] private Vector2 colliderSizeAir;
-    [SerializeField] private float colliderRadiusGround;
-    [SerializeField] private float colliderRadiusAir;
+    [SerializeField] private Vector2 colliderSizeGround = new(1,1);
+    [SerializeField] private Vector2 colliderSizeAir = new (0.6f, 0.6f);
+    [SerializeField] private float colliderRadiusGround = 0;
+    [SerializeField] private float colliderRadiusAir = 0.2f;
 
 
     [Header("Collider Settings")]
@@ -26,6 +28,8 @@ public class PlayerSurfaceDetection : MonoBehaviour
 
     private void Awake()
     {
+        playerRb = GetComponent<Rigidbody2D>();
+
         groundOffset = new Vector3(colliderOffset.x, 0, 0);
         wallOffset = new Vector3(0, colliderOffset.y, 0);
         previousGroundCheck = onGround;
@@ -48,6 +52,7 @@ public class PlayerSurfaceDetection : MonoBehaviour
             previousGroundCheck = onGround;
             if (onGround)
             {
+                previousVelocity = playerRb.linearVelocityX;
                 playerCollider.size = colliderSizeGround;
                 playerCollider.edgeRadius = colliderRadiusGround;
             }
@@ -59,20 +64,28 @@ public class PlayerSurfaceDetection : MonoBehaviour
         }
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    // Draw the ground detection rays
-    //    Gizmos.color = onGround ? Color.green : Color.red;
-    //    Gizmos.DrawLine(transform.position + groundOffset, transform.position + groundOffset + Vector3.down * groundLength);
-    //    Gizmos.DrawLine(transform.position - groundOffset, transform.position - groundOffset + Vector3.down * groundLength);
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            playerRb.linearVelocityX = previousVelocity;
+        }
+    }
 
-    //    // Draw the wall detection rays
-    //    Gizmos.color = onWall ? Color.blue : Color.red;
-    //    Gizmos.DrawLine(transform.position + wallOffset, transform.position + wallOffset + facingDirection.x * wallLength * Vector3.right);
-    //    Gizmos.DrawLine(transform.position - wallOffset , transform.position - wallOffset + facingDirection.x * wallLength * Vector3.right);
+    private void OnDrawGizmos()
+    {
+        // Draw the ground detection rays
+        Gizmos.color = onGround ? Color.green : Color.red;
+        Gizmos.DrawLine(transform.position + groundOffset, transform.position + groundOffset + Vector3.down * groundLength);
+        Gizmos.DrawLine(transform.position - groundOffset, transform.position - groundOffset + Vector3.down * groundLength);
+
+        // Draw the wall detection rays
+        Gizmos.color = onWall ? Color.blue : Color.red;
+        Gizmos.DrawLine(transform.position + wallOffset, transform.position + wallOffset + facingDirection.x * wallLength * Vector3.right);
+        Gizmos.DrawLine(transform.position - wallOffset, transform.position - wallOffset + facingDirection.x * wallLength * Vector3.right);
 
 
-    //}
+    }
 
     //Send ground detection to other scripts
     public bool GetOnGround() { return onGround; }
