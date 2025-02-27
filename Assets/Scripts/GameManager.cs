@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using TMPro; // Para usar o TextMeshPro
+using TMPro;
+using UnityEngine.UI; // Para usar o Image
 
 public class GameManager : MonoBehaviour
 {
@@ -12,32 +13,34 @@ public class GameManager : MonoBehaviour
     // Referências para a UI
     [SerializeField] private TMP_Text timerText; // Para mostrar o tempo restante
     [SerializeField] private List<TMP_Text> playerLivesTexts; // Para mostrar as vidas de cada jogador
+    [SerializeField] private Canvas uiCanvas; // Referência ao Canvas
+    [SerializeField] private List<GameObject> healthCircles; // Lista para acompanhar os círculos de saúde de cada jogador
 
     private void Start()
     {
-        // Inicializa a lista de jogadores buscando todos os objetos com a tag "Player"
         players = GameObject.FindGameObjectsWithTag("Player").ToList();
+
         StartCoroutine(TimerCoroutine());
         UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
     }
 
     private void HandlePlayerElimination(GameObject eliminatedPlayer)
     {
-        // Desativa o jogador eliminado
         eliminatedPlayer.SetActive(false);
-
-        // Remove da lista de jogadores ativos
         players.Remove(eliminatedPlayer);
+        UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
+        CheckGameOver();
+    }
 
-        // Verifica quantos jogadores ainda estão ativos
+    private void CheckGameOver()
+    {
         int activePlayers = players.Count(p => p.activeSelf);
-
         if (activePlayers == 1)
         {
             HandleGameOver();
         }
-
-        UpdatePlayerLivesUI(); // Atualiza a UI após a eliminação
     }
 
     private IEnumerator TimerCoroutine()
@@ -66,29 +69,77 @@ public class GameManager : MonoBehaviour
 
     public void HandlePlayerDamage(GameObject player, float damage)
     {
-        // Implementar lógica se necessário
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        UpdateHealthCircleUI();
     }
 
     public void HandlePlayerDeath(GameObject player, int lives)
     {
-        if (lives <= 0) { HandlePlayerElimination(player); }
-        UpdatePlayerLivesUI(); // Atualiza a UI ao lidar com a morte
+        if (lives <= 0)
+        {
+            HandlePlayerElimination(player);
+        }
+        UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
     }
-
     private void UpdatePlayerLivesUI()
     {
         for (int i = 0; i < playerLivesTexts.Count; i++)
+        {
+            if (i < players.Count && players[i].activeSelf)
+            {
+                PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
+                if (playerLivesTexts[i] != null) // Check if the text object is not null
+                {
+                    playerLivesTexts[i].text = playerHealth.Lives.ToString();
+                    playerLivesTexts[i].gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (playerLivesTexts[i] != null) // Check if the text object is not null
+                {
+                    playerLivesTexts[i].gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    private void UpdateHealthCircleUI()
     {
-        if (i < players.Count && players[i].activeSelf) 
+        for (int i = 0; i < healthCircles.Count; i++)
         {
-            PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
-            playerLivesTexts[i].text = "Vidas: " + playerHealth.Lives;
-            playerLivesTexts[i].gameObject.SetActive(true);
-        }
-        else
-        {
-            playerLivesTexts[i].gameObject.SetActive(false);
+            if (i < players.Count && players[i].activeSelf)
+            {
+                PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
+                if (healthCircles[i] != null)
+                {
+                    float t = playerHealth.Damage / (4 * 10f); // Assuming 10 is the damage threshold for full red
+                    t = Mathf.Clamp01(t); // Ensure t is between 0 and 1
+                    Color color = Color.Lerp(Color.green, Color.red, t);
+                    healthCircles[i].GetComponent<Image>().color = color;
+                    healthCircles[i].gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (healthCircles[i] != null)
+                {
+                    healthCircles[i].gameObject.SetActive(false);
+                }
+            }
         }
     }
+
+    public Image GetHealthCircleImage(GameObject player)
+    {
+        int index = players.IndexOf(player);
+        if (index >= 0 && index < healthCircles.Count)
+        {
+            return healthCircles[index].GetComponent<Image>();
+        }
+        return null;
     }
+
+
 }

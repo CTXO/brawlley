@@ -1,5 +1,6 @@
 using Brawlley.Attacks;
 using UnityEngine;
+using UnityEngine.UI; // Ensure you have this for Image
 
 public class PlayerHurt : MonoBehaviour
 {
@@ -11,14 +12,21 @@ public class PlayerHurt : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         playerHealth = GetComponent<PlayerHealth>();
-        gameManager = FindAnyObjectByType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>(); // Ensure this is correct for accessing the GameManager
     }
 
     public void GetHit(Vector2 direction)
     {
-        playerHealth.Damage += 10;
+        playerHealth.Damage += 10; // Increase damage
 
         gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
+
+        Image healthCircleImage = gameManager.GetHealthCircleImage(this.gameObject);
+        if (healthCircleImage != null)
+        {
+            gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
+        }
+
 
         playerRb.linearVelocity = direction * playerHealth.Damage;
     }
@@ -38,13 +46,13 @@ public class PlayerHurt : MonoBehaviour
         playerHealth.ResetHealth();
         playerRb.linearVelocity = Vector2.zero;
         transform.position = new Vector3(0, 3, 0);
+        gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
     }
 
     public void Die()
     {
         playerHealth.Lives--;
-        gameManager.HandlePlayerDeath(this.gameObject, playerHealth.Lives);
-
+        gameManager.HandlePlayerDeath(this.gameObject, playerHealth.Lives);        
         if (playerHealth.Lives > 0) { Respawn(); }
     }
 }
