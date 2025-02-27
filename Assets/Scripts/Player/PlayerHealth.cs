@@ -14,6 +14,7 @@ public class PlayerHealth : MonoBehaviour
     {
         damage = 0;
     }
+
     public float Damage { get => damage; set => damage = value; }
 
     public int Lives { get => playerLives; set => playerLives = value; }

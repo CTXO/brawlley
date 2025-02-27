@@ -2,46 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI; // Para usar o Image
 
 public class GameManager : MonoBehaviour
 {
     private List<GameObject> players;
-    [SerializeField]private float time = 60;
+    [SerializeField] private float time = 60;
+
+    // Referências para a UI
+    [SerializeField] private TMP_Text timerText; // Para mostrar o tempo restante
+    [SerializeField] private List<TMP_Text> playerLivesTexts; // Para mostrar as vidas de cada jogador
+    [SerializeField] private Canvas uiCanvas; // Referência ao Canvas
+    [SerializeField] private List<GameObject> healthCircles; // Lista para acompanhar os círculos de saúde de cada jogador
 
     private void Start()
     {
-        // Inicializa a lista de jogadores buscando todos os objetos com a tag "Player"
         players = GameObject.FindGameObjectsWithTag("Player").ToList();
+
         StartCoroutine(TimerCoroutine());
+        UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
     }
+
     private void HandlePlayerElimination(GameObject eliminatedPlayer)
     {
-        // Desativa o jogador eliminado
         eliminatedPlayer.SetActive(false);
-
-        // Remove da lista de jogadores ativos
         players.Remove(eliminatedPlayer);
+        UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
+        CheckGameOver();
+    }
 
-        // Verifica quantos jogadores ainda estão ativos
+    private void CheckGameOver()
+    {
         int activePlayers = players.Count(p => p.activeSelf);
-
         if (activePlayers == 1)
         {
             HandleGameOver();
         }
     }
 
-    // Copiei e colei um timer que eu tinha feito para outro projeto
     private IEnumerator TimerCoroutine()
     {
         while (time > 0)
         {
-            //timerText.text = "Time: " + Mathf.Round(time);
+            timerText.text = "Time: " + Mathf.Round(time);
             yield return null;
             time -= Time.deltaTime;
         }
 
-        //timerText.text = "Time: 0";
+        timerText.text = "Time: 0";
         HandleTimeout();
     }
 
@@ -52,21 +63,83 @@ public class GameManager : MonoBehaviour
 
     private void HandleTimeout()
     {
-
+        Debug.Log("Tempo esgotado!");
+        // Implementar lógica para finalizar o jogo
     }
 
-    // Lógica para atualizar a GUI quando o player tomar dano
-    // Passando o valor do dano para poder usar ele como parâmetro para ajustar a cor
     public void HandlePlayerDamage(GameObject player, float damage)
     {
-        
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        UpdateHealthCircleUI();
     }
 
-    // Lógica para atualizar a GUI quando o player morrer 
     public void HandlePlayerDeath(GameObject player, int lives)
     {
-        if (lives <= 0) { HandlePlayerElimination(player); }
+        if (lives <= 0)
+        {
+            HandlePlayerElimination(player);
+        }
+        UpdatePlayerLivesUI();
+        UpdateHealthCircleUI();
+    }
+    private void UpdatePlayerLivesUI()
+    {
+        for (int i = 0; i < playerLivesTexts.Count; i++)
+        {
+            if (i < players.Count && players[i].activeSelf)
+            {
+                PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
+                if (playerLivesTexts[i] != null) // Check if the text object is not null
+                {
+                    playerLivesTexts[i].text = playerHealth.Lives.ToString();
+                    playerLivesTexts[i].gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (playerLivesTexts[i] != null) // Check if the text object is not null
+                {
+                    playerLivesTexts[i].gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
-    //PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
+    private void UpdateHealthCircleUI()
+    {
+        for (int i = 0; i < healthCircles.Count; i++)
+        {
+            if (i < players.Count && players[i].activeSelf)
+            {
+                PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
+                if (healthCircles[i] != null)
+                {
+                    float t = playerHealth.Damage / (4 * 10f); // Assuming 10 is the damage threshold for full red
+                    t = Mathf.Clamp01(t); // Ensure t is between 0 and 1
+                    Color color = Color.Lerp(Color.green, Color.red, t);
+                    healthCircles[i].GetComponent<Image>().color = color;
+                    healthCircles[i].gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (healthCircles[i] != null)
+                {
+                    healthCircles[i].gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    public Image GetHealthCircleImage(GameObject player)
+    {
+        int index = players.IndexOf(player);
+        if (index >= 0 && index < healthCircles.Count)
+        {
+            return healthCircles[index].GetComponent<Image>();
+        }
+        return null;
+    }
+
+
 }

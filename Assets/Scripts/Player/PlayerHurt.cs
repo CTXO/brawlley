@@ -1,9 +1,9 @@
 using Brawlley.Attacks;
 using UnityEngine;
+using UnityEngine.UI; // Ensure you have this for Image
 
 public class PlayerHurt : MonoBehaviour
 {
-
     private PlayerHealth playerHealth;
     private Rigidbody2D playerRb;
     private GameManager gameManager;
@@ -12,19 +12,25 @@ public class PlayerHurt : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody2D>();
         playerHealth = GetComponent<PlayerHealth>();
-        gameManager = FindAnyObjectByType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>(); // Ensure this is correct for accessing the GameManager
     }
 
     public void GetHit(Vector2 direction)
     {
-        playerHealth.Damage += 10; // quanto maior a sa�de, maior � o empurr�o (pouco intuitivo), mas � o como funciona
-        
+        playerHealth.Damage += 10; // Increase damage
+
         gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
+
+        Image healthCircleImage = gameManager.GetHealthCircleImage(this.gameObject);
+        if (healthCircleImage != null)
+        {
+            gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
+        }
+
 
         playerRb.linearVelocity = direction * playerHealth.Damage;
     }
 
-    // Lidar quando o jogador � atingido por um proj�til
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Spell spell = collision.GetComponent<Spell>();
@@ -34,18 +40,19 @@ public class PlayerHurt : MonoBehaviour
 
         Destroy(collision.gameObject);
     }
+
     private void Respawn()
     {
         playerHealth.ResetHealth();
         playerRb.linearVelocity = Vector2.zero;
         transform.position = new Vector3(0, 3, 0);
+        gameManager.HandlePlayerDamage(this.gameObject, playerHealth.Damage);
     }
+
     public void Die()
     {
         playerHealth.Lives--;
-        gameManager.HandlePlayerDeath(this.gameObject, playerHealth.Lives);
-
+        gameManager.HandlePlayerDeath(this.gameObject, playerHealth.Lives);        
         if (playerHealth.Lives > 0) { Respawn(); }
     }
-
 }
