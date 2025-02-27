@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      LoadingBar02Fill_192x18_0: -5380234273842127251
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
