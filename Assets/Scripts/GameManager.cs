@@ -2,18 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro; // Para usar o TextMeshPro
 
 public class GameManager : MonoBehaviour
 {
     private List<GameObject> players;
-    [SerializeField]private float time = 60;
+    [SerializeField] private float time = 60;
+
+    // Referências para a UI
+    [SerializeField] private TMP_Text timerText; // Para mostrar o tempo restante
+    [SerializeField] private List<TMP_Text> playerLivesTexts; // Para mostrar as vidas de cada jogador
 
     private void Start()
     {
         // Inicializa a lista de jogadores buscando todos os objetos com a tag "Player"
         players = GameObject.FindGameObjectsWithTag("Player").ToList();
         StartCoroutine(TimerCoroutine());
+        UpdatePlayerLivesUI();
     }
+
     private void HandlePlayerElimination(GameObject eliminatedPlayer)
     {
         // Desativa o jogador eliminado
@@ -29,19 +36,20 @@ public class GameManager : MonoBehaviour
         {
             HandleGameOver();
         }
+
+        UpdatePlayerLivesUI(); // Atualiza a UI após a eliminação
     }
 
-    // Copiei e colei um timer que eu tinha feito para outro projeto
     private IEnumerator TimerCoroutine()
     {
         while (time > 0)
         {
-            //timerText.text = "Time: " + Mathf.Round(time);
+            timerText.text = "Time: " + Mathf.Round(time);
             yield return null;
             time -= Time.deltaTime;
         }
 
-        //timerText.text = "Time: 0";
+        timerText.text = "Time: 0";
         HandleTimeout();
     }
 
@@ -52,21 +60,35 @@ public class GameManager : MonoBehaviour
 
     private void HandleTimeout()
     {
-
+        Debug.Log("Tempo esgotado!");
+        // Implementar lógica para finalizar o jogo
     }
 
-    // Lógica para atualizar a GUI quando o player tomar dano
-    // Passando o valor do dano para poder usar ele como parâmetro para ajustar a cor
     public void HandlePlayerDamage(GameObject player, float damage)
     {
-        
+        // Implementar lógica se necessário
     }
 
-    // Lógica para atualizar a GUI quando o player morrer 
     public void HandlePlayerDeath(GameObject player, int lives)
     {
         if (lives <= 0) { HandlePlayerElimination(player); }
+        UpdatePlayerLivesUI(); // Atualiza a UI ao lidar com a morte
     }
 
-    //PlayerHurt playerHurt = player.GetComponent<PlayerHurt>();
+    private void UpdatePlayerLivesUI()
+    {
+        for (int i = 0; i < playerLivesTexts.Count; i++)
+    {
+        if (i < players.Count && players[i].activeSelf) 
+        {
+            PlayerHealth playerHealth = players[i].GetComponent<PlayerHealth>();
+            playerLivesTexts[i].text = "Vidas: " + playerHealth.Lives;
+            playerLivesTexts[i].gameObject.SetActive(true);
+        }
+        else
+        {
+            playerLivesTexts[i].gameObject.SetActive(false);
+        }
+    }
+    }
 }
