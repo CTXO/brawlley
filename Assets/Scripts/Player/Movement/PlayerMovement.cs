@@ -49,12 +49,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (!canMove) 
-        {
-            desiredVelocity = Vector2.zero;
-            return; 
-        }
-
         if (directionX != 0)
         {
             transform.localScale = new Vector3(directionX > 0 ? 1 : -1, 1, 1);
@@ -73,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        onGround = surfaceDetector.GetOnGround();
         onWall = surfaceDetector.GetOnWall();
         velocity = playerRb.linearVelocity;
 
@@ -87,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
         deceleration = onGround ? maxDecceleration : maxAirDeceleration;
         turnSpeed = onGround ? maxTurnSpeed : maxAirTurnSpeed;
 
-        if (pressingKey)
+        if (pressingKey && canMove)
         {
             //If the sign (i.e. positive or negative) of our input direction doesn't match our movement, it means we're turning around and so should use the turn speed stat.
             if (Mathf.Sign(directionX) != Mathf.Sign(velocity.x))
@@ -111,11 +106,18 @@ public class PlayerMovement : MonoBehaviour
 
         if (!onWall)
         {
-            velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+            if (!canMove)
+            {
+                velocity.x = Mathf.MoveTowards(velocity.x, 0, maxSpeedChange);
+            }
+            else
+            {
+                velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+            }
         }
 
         //Update the Rigidbody with this new velocity
-        playerRb.linearVelocity = velocity;
+        playerRb.linearVelocityX = velocity.x;
 
     }
 
