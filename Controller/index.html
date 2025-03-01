@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Controller</title>
+    <style>
+        /* Style your buttons for mobile */
+		body {
+			min-height: 100vh;
+		}
+		.hidden {
+			display: none;
+		}
+		.button-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+        button {
+            font-size: 24px;
+            margin: 20px;
+			flex: 1;
+			padding: 5rem;
+        }
+    </style>
+</head>
+<body>
+	<h1 id="title">Title</h1>
+	<h1 class="hidden">Pressing...</h1>
+	<div class="button-container">
+		<button class="controller-button" data-x="0" data-y="1">UP</button>
+		<button class="controller-button" data-x="-1" data-y="0">LEFT</button>
+		<button class="controller-button" data-x="1" data-y="0">RIGHT</button>
+		<button class="controller-button" data-x="0" data-y="-1" >DOWN</button>
+	</div>
+
+    <script>
+        const socket = new WebSocket("ws://192.168.0.18:8080");
+
+        socket.addEventListener("open", (event) => {
+            console.log("Connected to Unity server!");
+        });
+
+        socket.addEventListener("error", (event) => {
+            console.error("WebSocket error:", event);
+        });
+		
+		let latency = 0;
+
+		setInterval(() => {
+			const timestamp = BigInt(Date.now()); 
+			const buffer = new ArrayBuffer(9);
+			const view = new DataView(buffer);
+			view.setUint8(0, 99); 
+			view.setBigUint64(1, timestamp, true);
+			socket.send(buffer);
+			console.log("sent ping")
+		}, 1000);
+
+		// Handle pong responses
+		socket.onmessage = async (event) => {
+			if (event.data.size === 9) {
+				const arrayBuffer = await event.data.arrayBuffer();
+				const view = new DataView(arrayBuffer);
+				const marker = view.getUint8(0);
+				if (marker === 100) { 
+					const serverTimestamp = view.getBigUint64(1, true);
+					const now = Date.now();
+					const rtt = now - Number(serverTimestamp); 
+					latency = rtt / 2; 
+					document.getElementById('title').innerText = `Latency: ${latency}ms`;
+				}
+			}
+		};
+
+        function send(event, command) {
+
+			console.log(event)
+			console.log(command)
+            if (socket.readyState === WebSocket.OPEN) {
+				console.log("sent command", command)
+                socket.send(buffer);
+            }
+        }
+
+		let frameIds = {0: 0, 1: 0, 2: 0, 3: 0}
+		function pressButton(buffer, index) {
+			if (socket.readyState === WebSocket.OPEN) {
+				socket.send(buffer)
+			}
+			frameIds[index] = requestAnimationFrame(pressButton.bind(null, buffer, index))
+		}
+
+		const controllerButtons = document.querySelectorAll('.controller-button')
+		const pressingElement = document.querySelector('.hidden')
+		const downEvent = (i, event) => {
+			console.log("mouse down")
+			const xString = event.target.getAttribute("data-x");
+			const yString = event.target.getAttribute("data-y");
+			const x = parseInt(xString);
+			const y = parseInt(yString);
+			const buffer = new ArrayBuffer(2);
+			const dataView = new DataView(buffer);
+
+			dataView.setInt8(0, x);
+			dataView.setInt8(1, y);
+			pressFunction = pressButton.bind(null, buffer, i)
+			frameIds[i] = requestAnimationFrame(pressFunction);
+			pressingElement.classList.remove('hidden');
+
+
+		}
+
+		const upEvent = (i, event) => {
+			const frameId = frameIds[i]
+			if (frameId) {
+				console.log("cancel frame", frameId)
+				cancelAnimationFrame(frameId)
+				const buffer = new ArrayBuffer(2);
+				const dataView = new DataView(buffer);
+				dataView.setInt8(0, 0);
+				dataView.setInt8(1, 0);
+
+				if (socket.readyState === WebSocket.OPEN) {
+					socket.send(buffer)
+					pressingElement.classList.add('hidden');
+				}
+			}
+		}
+		controllerButtons.forEach((button, i) => {
+			downEventBind = downEvent.bind(this, i)
+			upEventBind = upEvent.bind(this, i)
+			button.addEventListener('mousedown', downEventBind)
+			button.addEventListener('mouseup', upEventBind);
+			button.addEventListener('touchstart', downEventBind);
+			button.addEventListener('touchend', upEventBind);
+		})
+	
+    </script>
+</body>
+</html>
