@@ -5,6 +5,7 @@ using PimDeWitte.UnityMainThreadDispatcher;
 using System;
 using Brawlley;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 public class WebSocketServerManager : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class WebSocketServerManager : MonoBehaviour
     private List<IWebSocketConnection> _clients = new List<IWebSocketConnection>();
     public Dictionary<string, PlayerController> connectedPlayers = new Dictionary<string, PlayerController>();
 
-    // Dicionário para armazenar inputs ativos por jogador
+    // Dicionï¿½rio para armazenar inputs ativos por jogador
     private Dictionary<string, Vector2> activeInputs = new Dictionary<string, Vector2>();
 
     void Start()
@@ -34,14 +35,16 @@ public class WebSocketServerManager : MonoBehaviour
                 activeInputs.Remove(socket.ConnectionInfo.Id.ToString());
             };
 
-            socket.OnMessage = message => {
+            socket.OnBinary = message => {
                 UnityMainThreadDispatcher.Instance().Enqueue(() => HandleMessage(socket.ConnectionInfo.Id.ToString(), message));
             };
         });
     }
 
-    void HandleMessage(string clientId, string message)
+    void HandleMessage(string clientId, byte[] message)
     {
+        Debug.Log("Message is: " + message.ToHexString());
+        
         if (!connectedPlayers.ContainsKey(clientId))
         {
             // Associa o cliente a um jogador na cena
@@ -60,56 +63,59 @@ public class WebSocketServerManager : MonoBehaviour
 
         PlayerController player = connectedPlayers[clientId];
         Vector2 direction = activeInputs[clientId];
+        
+        if (message.Length == 0)
+            return;
 
-        // Atualiza direção baseado nos comandos
-        switch (message)
+        switch (message[0]) 
         {
-            case "MoveUp":
+            case 0x01: // MoveUp
                 direction.y = 1;
                 break;
-            case "MoveDown":
+            case 0x02: // MoveDown
                 direction.y = -1;
                 break;
-            case "MoveLeft":
+            case 0x03: // MoveLeft
                 direction.x = -1;
                 break;
-            case "MoveRight":
+            case 0x04: // MoveRight
                 direction.x = 1;
                 break;
-            case "StopMoveUp":
+            case 0x05: // StopMoveUp
                 if (direction.y == 1) direction.y = 0;
                 break;
-            case "StopMoveDown":
+            case 0x06: // StopMoveDown
                 if (direction.y == -1) direction.y = 0;
                 break;
-            case "StopMoveLeft":
+            case 0x07: // StopMoveLeft
                 if (direction.x == -1) direction.x = 0;
                 break;
-            case "StopMoveRight":
+            case 0x08: // StopMoveRight
                 if (direction.x == 1) direction.x = 0;
                 break;
-            case "Jump":
+            case 0x09: // Jump
                 player.GetComponent<PlayerJump>().OnJump(new InputAction.CallbackContext());
                 break;
-            case "Dash":
+            case 0x0A: // Dash
                 player.GetComponent<PlayerDash>().OnDash(new InputAction.CallbackContext());
                 break;
-            case "Parry":
+            case 0x0B: // Parry
                 player.GetComponent<PlayerParry>().OnParry(new InputAction.CallbackContext());
                 break;
-            case "SpellStart":
+            case 0x0C: // SpellStart
                 player.OnAiming(new InputAction.CallbackContext());
                 break;
-            case "SpellRelease":
+            case 0x0D: // SpellRelease
                 player.OnStopAiming(new InputAction.CallbackContext());
                 player.GetComponent<PlayerSpell>().OnAttack(new InputAction.CallbackContext());
                 break;
-            case "Melee":
+            case 0x0E: // Melee
                 player.GetComponent<PlayerMelee>().OnAttack(new InputAction.CallbackContext());
                 break;
         }
 
-        // Atualiza direção do jogador
+
+        // Atualiza direï¿½ï¿½o do jogador
         activeInputs[clientId] = direction;
         player.SetDirection(direction);
     }
