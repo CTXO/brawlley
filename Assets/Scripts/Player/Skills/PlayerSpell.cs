@@ -16,25 +16,28 @@ namespace Brawlley
         [Header("Player Spell Data")]
         [SerializeField] float travelSpeed = 1f;
         [SerializeField] float verticalCastGravity = 0.5f;
+        private Vector2 attackDirection;
         #endregion
 
         #region MonoBehaviour Lifecycle Methods
         protected override void Start()
         {
             base.Start();
-            GameInputs.Skill.Spell.canceled += OnAttack;
         }
         #endregion
 
         #region Player Spell Methods
+        
+        public Vector2 AttackDirection { get => attackDirection; set => attackDirection = value; }
+
         public override void OnAttack(InputAction.CallbackContext context)
         {
             if (status == AttackStatus.Ready)
             {
-                Vector2 attackDirection = GameInputs.Player.Movement.ReadValue<Vector2>();
+                
 
                 if (attackDirection == Vector2.zero)
-                    attackDirection.x = direction == AttackDirection.Right ? 1f : -1f;
+                    attackDirection.x = transform.localScale.x;
 
                 GameObject spellObject = Instantiate(spellPrefab, spellSpawnPoint.position, Quaternion.identity);
 

@@ -15,7 +15,7 @@ namespace Brawlley
         [SerializeField] string team;
         public string Team { get => team; set => team = value; }
 
-        public GameInputs GameInputs => playerController.GameInputs;
+        //public GameInputs GameInputs => playerController.GameInputs;
         #endregion
     }
 }

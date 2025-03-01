@@ -12,7 +12,7 @@ namespace Brawlley
         #region Resources
         [Header("Player Attack Resources")]
         [SerializeField] protected Player player;
-        protected GameInputs GameInputs => player.GameInputs;
+        //protected GameInputs GameInputs => player.GameInputs;
         #endregion
 
         #region Data

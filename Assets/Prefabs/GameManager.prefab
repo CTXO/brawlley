@@ -44,3 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed9dcea47b49d0a4e9a27393b774b7a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  time: 60
+  timerText: {fileID: 0}
+  playerLivesTexts:
+  - {fileID: 0}
+  - {fileID: 0}
+  uiCanvas: {fileID: 0}
+  healthCircles:
+  - {fileID: 0}
+  - {fileID: 0}

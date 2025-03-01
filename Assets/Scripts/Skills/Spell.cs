@@ -63,23 +63,32 @@ namespace Brawlley.Attacks
             spellRigidbody.linearVelocity = new Vector2(parriedProjectileHorizontalSpeed * direction.x, parriedProjectileVelocity);
         }
         
-        public virtual void OnPlayerCollisionDealKnockback()
+        public void Attack(Vector2 direction)
         {
-            if (currentCollision != null && currentCollision.CompareTag("Player"))
-            {
-                if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
-                {
-                    if (collidedPlayer.Team == ignoreTeam)
-                        return;
+            ApplyGravity(0.5f);
+            spellRigidbody.linearVelocity = direction;
+            spellCollider.enabled = false;
+            Invoke(nameof(ActivateCollision), timeToActivate);
 
-                    if (currentCollision.TryGetComponent<Rigidbody2D>(out var playerRigidbody))
-                        playerRigidbody.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
-
-                    Destroy(gameObject);
-                }
-
-            }
         }
+
+        //public virtual void OnPlayerCollisionDealKnockback()
+        //{
+        //    if (currentCollision != null && currentCollision.CompareTag("Player"))
+        //    {
+        //        if (currentCollision.TryGetComponent<Player>(out var collidedPlayer))
+        //        {
+        //            if (collidedPlayer.Team == ignoreTeam)
+        //                return;
+
+        //            if (currentCollision.TryGetComponent<Rigidbody2D>(out var playerRigidbody))
+        //                playerRigidbody.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
+
+        //            Destroy(gameObject);
+        //        }
+
+        //    }
+        //}
 
         //public void OnTagCollisionDestroy(string tag)
         //{

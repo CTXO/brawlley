@@ -1,3 +1,5 @@
+using Brawlley;
+using Brawlley.Attacks;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,11 +9,14 @@ public class PlayerController : MonoBehaviour
 {
     #region Components
     [Header("Components")]
-    GameInputs gameInputs;
+    //GameInputs gameInputs;
+    private PlayerInput playerInput;
     private PlayerMovement playerMovement;
     private PlayerJump playerJump;
     private PlayerDash playerDash;
     private PlayerParry playerParry;
+    private PlayerSpell playerSpell;
+    private PlayerMelee playerMelee;
     #endregion
 
     #region Data
@@ -19,57 +24,62 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Properties
-    public GameInputs GameInputs => gameInputs;
+    //public GameInputs GameInputs => gameInputs;
     public Vector2 PlayerDirection => playerDirection;
     #endregion
 
     #region MonoBehaviour Lifecycle Methods
     void Awake()
     {
-        gameInputs = new GameInputs(); // Initialize input system
-
+        //gameInputs = new GameInputs(); // Initialize input system
+        playerInput = GetComponent<PlayerInput>(); // Get reference to player input
         // Get references to your movement and jump scripts
         playerJump = GetComponent<PlayerJump>();
         playerDash = GetComponent<PlayerDash>();
         playerMovement = GetComponent<PlayerMovement>();
         playerParry = GetComponent<PlayerParry>();
-
+        playerSpell = GetComponent<PlayerSpell>();
+        playerMelee = GetComponent<PlayerMelee>();
     }
 
     void OnEnable()
     {
-        gameInputs.Player.Enable(); // Enable inputs
-        gameInputs.Skill.Enable();
+        // Enable player input actions dynamically
+        playerInput.actions.Enable();
 
-        // Subscribe functions to input events
-        gameInputs.Player.Movement.performed += SetDirection;
-        gameInputs.Player.Movement.canceled += SetDirection; // Ensures movement stops when releasing key
+        playerInput.actions["Movement"].performed += SetDirection;
+        playerInput.actions["Movement"].canceled += SetDirection;
 
-        gameInputs.Player.Jump.started += playerJump.OnJump;
-        gameInputs.Player.Dash.started += playerDash.OnDash;
+        playerInput.actions["Jump"].started += playerJump.OnJump;
+        playerInput.actions["Dash"].started += playerDash.OnDash;
 
-        gameInputs.Skill.Spell.started += OnAiming;
-        gameInputs.Skill.Spell.canceled += OnStopAiming;
+        playerInput.actions["Spell"].started += OnAiming;
+        playerInput.actions["Spell"].canceled += OnStopAiming;
+        playerInput.actions["Spell"].canceled += playerSpell.OnAttack;
 
-        gameInputs.Skill.Parry.started += playerParry.OnParry;
+        playerInput.actions["Parry"].started += playerParry.OnParry;
+        playerInput.actions["Melee"].started += playerMelee.OnAttack;
+
+        // Debugging control schemes
+        Debug.Log($"{gameObject.name} using {playerInput.currentControlScheme}");
     }
 
     void OnDisable()
     {
-        // Unsubscribe to prevent memory leaks
-        gameInputs.Player.Movement.performed -= SetDirection;
-        gameInputs.Player.Movement.canceled -= SetDirection;
+        playerInput.actions["Movement"].performed -= SetDirection;
+        playerInput.actions["Movement"].canceled -= SetDirection;
 
-        gameInputs.Player.Jump.started -= playerJump.OnJump;
-        gameInputs.Player.Dash.started -= playerDash.OnDash;
-        
-        gameInputs.Skill.Spell.started -= OnAiming;
-        gameInputs.Skill.Spell.canceled -= OnStopAiming;
+        playerInput.actions["Jump"].started -= playerJump.OnJump;
+        playerInput.actions["Dash"].started -= playerDash.OnDash;
 
-        gameInputs.Skill.Parry.started -= playerParry.OnParry;
+        playerInput.actions["Spell"].started -= OnAiming;
+        playerInput.actions["Spell"].canceled -= OnStopAiming;
+        playerInput.actions["Spell"].canceled -= playerSpell.OnAttack;
 
-        gameInputs.Player.Disable(); // Disable inputs
-        gameInputs.Skill.Disable();
+        playerInput.actions["Parry"].started -= playerParry.OnParry;
+        playerInput.actions["Melee"].started -= playerMelee.OnAttack;
+
+        playerInput.actions.Disable();
     }
     #endregion
 
@@ -77,29 +87,31 @@ public class PlayerController : MonoBehaviour
     void SetDirection(InputAction.CallbackContext context)
     {
         playerDirection = context.ReadValue<Vector2>();
-        if (playerMovement != null) { playerMovement.Direction = playerDirection.x; }
-        if (playerJump != null) { playerJump.Direction = Mathf.Min(0, playerDirection.y); }
-        if (playerDash != null) { playerDash.Direction = playerDirection.normalized; }  
-
+        if (playerMovement != null) playerMovement.Direction = playerDirection.x;
+        if (playerJump != null) playerJump.Direction = Mathf.Min(0, playerDirection.y);
+        if (playerDash != null) playerDash.Direction = playerDirection.normalized;
+        if (playerMelee != null) playerMelee.AttackDirection = playerDirection;
+        if (playerSpell != null) playerSpell.AttackDirection = playerDirection;
     }
 
     void OnAiming(InputAction.CallbackContext context)
     {
-        gameInputs.Player.Jump.started -= playerJump.OnJump;
-        gameInputs.Player.Dash.started -= playerDash.OnDash;
-        gameInputs.Skill.Parry.started -= playerParry.OnParry;
         playerMovement.CanMove = false;
+        playerInput.actions["Jump"].started -= playerJump.OnJump;
+        playerInput.actions["Dash"].started -= playerDash.OnDash;
+        playerInput.actions["Parry"].started -= playerParry.OnParry;
+        playerInput.actions["Melee"].started -= playerMelee.OnAttack;
     }
 
     void OnStopAiming(InputAction.CallbackContext context)
     {
-        gameInputs.Player.Jump.started += playerJump.OnJump;
-        gameInputs.Player.Dash.started += playerDash.OnDash;
-        gameInputs.Skill.Parry.started += playerParry.OnParry;
         playerMovement.CanMove = true;
+        playerInput.actions["Jump"].started += playerJump.OnJump;
+        playerInput.actions["Dash"].started += playerDash.OnDash;
+        playerInput.actions["Parry"].started += playerParry.OnParry;
+        playerInput.actions["Melee"].started += playerMelee.OnAttack;
     }
 
-    //Considerar Apagar se n�o for usar
     public Vector2 GetDirection()
     {
         return playerDirection;

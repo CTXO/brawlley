@@ -25,10 +25,13 @@ public class MagicBarrier : MonoBehaviour
             spell.Parry();
             return;
         }
+        else if (wallCollider.IsTouching(collision))
+        {
+            //Precisa Trabalhar Isso Depois
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
         
-        //Precisa Trabalhar Isso Depois
-        Destroy(collision.gameObject);
-        Destroy(gameObject);
         
     }
 

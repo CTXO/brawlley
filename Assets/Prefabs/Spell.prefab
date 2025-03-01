@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7261107104673086597}
   m_Layer: 7
   m_Name: Spell
-  m_TagString: Untagged
+  m_TagString: Spell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -197,5 +197,5 @@ MonoBehaviour:
         m_CallState: 2
   spellRigidbody: {fileID: 157156168278266503}
   speed: 1
-  timeToActivate: 0.05
+  timeToActivate: 0.1
   direction: {x: 0, y: 0}
