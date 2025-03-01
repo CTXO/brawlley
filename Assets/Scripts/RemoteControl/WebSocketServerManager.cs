@@ -45,7 +45,7 @@ public class WebSocketServerManager : MonoBehaviour
         if (!connectedPlayers.ContainsKey(clientId))
         {
             // Associa o cliente a um jogador na cena
-            PlayerController[] players = FindObjectsOfType<PlayerController>();
+            PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
             if (players.Length > connectedPlayers.Count)
             {
                 connectedPlayers[clientId] = players[connectedPlayers.Count];
