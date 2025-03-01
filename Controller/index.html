@@ -6,31 +6,102 @@
         /* Style your buttons for mobile */
 		body {
 			min-height: 100vh;
+			box-sizing: border-box;
 		}
 		.hidden {
 			display: none;
 		}
 		.button-container {
 			display: flex;
-			justify-content: center;
 			align-items: center;
 		}
+
+		.button-container .container {
+			display: flex;
+			align-items: center;
+		}
+
+		.left-button-container {
+			display: flex;
+			position: relative;
+			width: 45%;
+			border: 1px red solid;
+			gap: 10px;
+
+		}
+
+		.right-button-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			border: 1px blue solid;
+			margin-left: auto;
+			align-items: center;
+
+		}
+
+		.button-row {
+			display: flex;
+			justify-content: center;
+			gap: 20px;
+		}
+
+		.first-row {
+
+		}
+
+
+		.y-buttons {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 20px;
+			margin-top: -20px;
+		}
+		
+		button {
+			width: 100px;
+			aspect-ratio: 1/1;
+		}
+
         button {
             font-size: 24px;
-            margin: 20px;
-			flex: 1;
-			padding: 5rem;
         }
     </style>
 </head>
 <body>
-	<h1 id="title">Title</h1>
-	<h1 class="hidden">Pressing...</h1>
+	<h1 id="title" style="display: none;">Title</h1>
+
 	<div class="button-container">
-		<button class="controller-button" data-x="0" data-y="1">UP</button>
-		<button class="controller-button" data-x="-1" data-y="0">LEFT</button>
-		<button class="controller-button" data-x="1" data-y="0">RIGHT</button>
-		<button class="controller-button" data-x="0" data-y="-1" >DOWN</button>
+		<div class="left-button-container">
+			<div class="left container">
+				<button id="left-button" class="controller-button" data-x="-1" data-y="0">LEFT</button>
+			</div>
+			<div class="y-buttons">
+				<button id="up-button" class="controller-button" data-x="0" data-y="1">UP</button>
+				<button id="down-button" class="controller-button" data-x="0" data-y="-1" >DOWN</button>
+			</div>
+			<div class="right container">
+				<button id="right-button" class="controller-button" data-x="1" data-y="0">RIGHT</button>
+			</div>
+		</div>
+		<div class="right-button-container">
+			<div class="buttton-row first-row">
+				<button id="melee-button" class="controller-button">MELEE</button>
+				<button id="block-button" class="controller-button">BLOCK</button>
+			</div>
+			<div class="buttton-row second-row">
+				<button id="cast-button" class="controller-button">CAST</button>
+				<button id="dash-button" class="controller-button">DASH</button>
+			</div>
+			<div class="buttton-row third-row">
+				<button id="dash-button" class="controller-button">JUMP</button>
+
+			</div>
+
+
+
+		</div>
 	</div>
 
     <script>
