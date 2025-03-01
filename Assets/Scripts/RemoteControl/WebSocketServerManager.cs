@@ -3,137 +3,115 @@ using UnityEngine;
 using System.Collections.Generic;
 using PimDeWitte.UnityMainThreadDispatcher;
 using System;
-using JetBrains.Annotations;
-using Unity.Collections;
-using Unity.VisualScripting;
+using Brawlley;
+using UnityEngine.InputSystem;
 
 public class WebSocketServerManager : MonoBehaviour
 {
     private WebSocketServer _server;
     private List<IWebSocketConnection> _clients = new List<IWebSocketConnection>();
-    public int nextId = 1;
+    public Dictionary<string, PlayerController> connectedPlayers = new Dictionary<string, PlayerController>();
 
-    public string client1 = "none";
-    public string client2 = "none";
+    // Dicionário para armazenar inputs ativos por jogador
+    private Dictionary<string, Vector2> activeInputs = new Dictionary<string, Vector2>();
 
     void Start()
     {
-        client1 = "none";
-        client2 = "none";
-        Debug.Log("Started Websocket");
-        // Start server on port 8080
+        Debug.Log("Started WebSocket on ws://0.0.0.0:8080");
         _server = new WebSocketServer("ws://0.0.0.0:8080");
         _server.Start(socket =>
         {
             socket.OnOpen = () => {
-                Debug.Log("Client connected!");
-                Debug.Log("Client 1 is: " + client1);
+                Debug.Log($"Client connected: {socket.ConnectionInfo.Id}");
                 _clients.Add(socket);
-                if (client1 == "none") {
-                    client1 = socket.ConnectionInfo.Id.ToString();
-                    Debug.Log("Assinged " + client1 + "to client1");
-                }
-                else if(client2 == "none") {
-                    client2 = socket.ConnectionInfo.Id.ToString();
-                    Debug.Log("Assinged " + client2 + "to client1");
-                    
-                }
-                else {
-                    Debug.Log("Could not assign" + client1 + ":" + client2);
-                }
-
+                activeInputs[socket.ConnectionInfo.Id.ToString()] = Vector2.zero;
             };
 
             socket.OnClose = () => {
-                Debug.Log("Client disconnected!");
-                if (client1 == socket.ConnectionInfo.Id.ToString()) {
-                    client1 = "none";
-                    Debug.Log("Disconnected client 1");
-                }
-                else if (client2 == socket.ConnectionInfo.Id.ToString()) {
-                    client2 = "none";
-                    Debug.Log("Disconnected client 2");
-                }
-                else {
-                    Debug.Log("No client found on disconnection!");
-                }
+                Debug.Log($"Client disconnected: {socket.ConnectionInfo.Id}");
                 _clients.Remove(socket);
-
+                connectedPlayers.Remove(socket.ConnectionInfo.Id.ToString());
+                activeInputs.Remove(socket.ConnectionInfo.Id.ToString());
             };
 
-            socket.OnBinary = bytes => {
-                PlayerController player = null;
-
-                if (bytes.Length == 9 && bytes[0] == 99) 
-                {
-                    // Extract the timestamp sent by the client (8 bytes = long)
-                    long clientTimestamp = BitConverter.ToInt64(bytes, 1);
-                    // Send back a pong with the same timestamp
-                    byte[] pongBytes = new byte[9];
-                    pongBytes[0] = 100; // "Pong" marker
-                    Buffer.BlockCopy(BitConverter.GetBytes(clientTimestamp), 0, pongBytes, 1, 8);
-                    socket.Send(pongBytes);
-                    return; // Skip other processing
-                }
-                UnityMainThreadDispatcher.Instance().Enqueue(() => HandleBinary(bytes, player));
+            socket.OnMessage = message => {
+                UnityMainThreadDispatcher.Instance().Enqueue(() => HandleMessage(socket.ConnectionInfo.Id.ToString(), message));
             };
         });
     }
 
-    
-    void HandleBinary(byte[] bytes, PlayerController player)
+    void HandleMessage(string clientId, string message)
     {
-
-        Debug.Log("Byte length: " + bytes.Length);
-        if (bytes.Length < 1) return;
-        Debug.Log("Bytes: " + bytes);
-
-        if (bytes.Length >= 2)
+        if (!connectedPlayers.ContainsKey(clientId))
         {
-            int x = (sbyte)bytes[0];
-            int y = (sbyte)bytes[1];
-
-            // Get player input from keyboard or controller
-            float horizontalInput = x;
-            float verticalInput = y;
-
-            // // Check if diagonal movement is allowed
-            // if (player.canMoveDiagonally)
-            // {
-            //     // Set movement direction based on input
-            //     player.movement = new Vector2(horizontalInput, verticalInput);
-            //     // Optionally rotate the player based on movement direction
-            //     player.RotatePlayer(horizontalInput, verticalInput);
-            // }
-            // else
-            // {
-            //     // Determine the priority of movement based on input
-            //     if (horizontalInput != 0)
-            //     {
-            //         player.isMovingHorizontally = true;
-            //     }
-            //     else if (verticalInput != 0)
-            //     {
-            //         player.isMovingHorizontally = false;
-            //     }
-
-            //     // Set movement direction and optionally rotate the player
-            //     if (player.isMovingHorizontally)
-            //     {
-            //         player.movement = new Vector2(horizontalInput, 0);
-            //         player.RotatePlayer(horizontalInput, 0);
-            //     }
-            //     else
-            //     {
-            //         player.movement = new Vector2(0, verticalInput);
-            //         player.RotatePlayer(0, verticalInput);
-            //     }
-            // }
-
-
+            // Associa o cliente a um jogador na cena
+            PlayerController[] players = FindObjectsOfType<PlayerController>();
+            if (players.Length > connectedPlayers.Count)
+            {
+                connectedPlayers[clientId] = players[connectedPlayers.Count];
+                Debug.Log($"Assigned {clientId} to {players[connectedPlayers.Count - 1].gameObject.name}");
+            }
+            else
+            {
+                Debug.LogWarning("No available player slots for new connection.");
+                return;
+            }
         }
 
+        PlayerController player = connectedPlayers[clientId];
+        Vector2 direction = activeInputs[clientId];
 
+        // Atualiza direção baseado nos comandos
+        switch (message)
+        {
+            case "MoveUp":
+                direction.y = 1;
+                break;
+            case "MoveDown":
+                direction.y = -1;
+                break;
+            case "MoveLeft":
+                direction.x = -1;
+                break;
+            case "MoveRight":
+                direction.x = 1;
+                break;
+            case "StopMoveUp":
+                if (direction.y == 1) direction.y = 0;
+                break;
+            case "StopMoveDown":
+                if (direction.y == -1) direction.y = 0;
+                break;
+            case "StopMoveLeft":
+                if (direction.x == -1) direction.x = 0;
+                break;
+            case "StopMoveRight":
+                if (direction.x == 1) direction.x = 0;
+                break;
+            case "Jump":
+                player.GetComponent<PlayerJump>().OnJump(new InputAction.CallbackContext());
+                break;
+            case "Dash":
+                player.GetComponent<PlayerDash>().OnDash(new InputAction.CallbackContext());
+                break;
+            case "Parry":
+                player.GetComponent<PlayerParry>().OnParry(new InputAction.CallbackContext());
+                break;
+            case "SpellStart":
+                player.OnAiming(new InputAction.CallbackContext());
+                break;
+            case "SpellRelease":
+                player.OnStopAiming(new InputAction.CallbackContext());
+                player.GetComponent<PlayerSpell>().OnAttack(new InputAction.CallbackContext());
+                break;
+            case "Melee":
+                player.GetComponent<PlayerMelee>().OnAttack(new InputAction.CallbackContext());
+                break;
+        }
+
+        // Atualiza direção do jogador
+        activeInputs[clientId] = direction;
+        player.SetDirection(direction);
     }
 
     void OnDestroy()

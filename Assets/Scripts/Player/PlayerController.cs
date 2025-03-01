@@ -47,8 +47,8 @@ public class PlayerController : MonoBehaviour
         // Enable player input actions dynamically
         playerInput.actions.Enable();
 
-        playerInput.actions["Movement"].performed += SetDirection;
-        playerInput.actions["Movement"].canceled += SetDirection;
+        //playerInput.actions["Movement"].performed += SetDirection;
+        //playerInput.actions["Movement"].canceled += SetDirection;
 
         playerInput.actions["Jump"].started += playerJump.OnJump;
         playerInput.actions["Dash"].started += playerDash.OnDash;
@@ -66,8 +66,8 @@ public class PlayerController : MonoBehaviour
 
     void OnDisable()
     {
-        playerInput.actions["Movement"].performed -= SetDirection;
-        playerInput.actions["Movement"].canceled -= SetDirection;
+        //playerInput.actions["Movement"].performed -= SetDirection;
+        //playerInput.actions["Movement"].canceled -= SetDirection;
 
         playerInput.actions["Jump"].started -= playerJump.OnJump;
         playerInput.actions["Dash"].started -= playerDash.OnDash;
@@ -84,9 +84,10 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Player Controller Methods
-    void SetDirection(InputAction.CallbackContext context)
+    public void SetDirection(Vector2 direction)
     {
-        playerDirection = context.ReadValue<Vector2>();
+        //playerDirection = context.ReadValue<Vector2>();
+        playerDirection = direction;
         if (playerMovement != null) playerMovement.Direction = playerDirection.x;
         if (playerJump != null) playerJump.Direction = Mathf.Min(0, playerDirection.y);
         if (playerDash != null) playerDash.Direction = playerDirection.normalized;
@@ -94,7 +95,7 @@ public class PlayerController : MonoBehaviour
         if (playerSpell != null) playerSpell.AttackDirection = playerDirection;
     }
 
-    void OnAiming(InputAction.CallbackContext context)
+    public void OnAiming(InputAction.CallbackContext context)
     {
         playerMovement.CanMove = false;
         playerInput.actions["Jump"].started -= playerJump.OnJump;
@@ -103,7 +104,7 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Melee"].started -= playerMelee.OnAttack;
     }
 
-    void OnStopAiming(InputAction.CallbackContext context)
+    public void OnStopAiming(InputAction.CallbackContext context)
     {
         playerMovement.CanMove = true;
         playerInput.actions["Jump"].started += playerJump.OnJump;
