@@ -76,14 +76,14 @@
 	<div class="button-container">
 		<div class="left-button-container">
 			<div class="left container">
-				<button id="left-button" class="controller-button" data-x="-1" data-y="0">LEFT</button>
+				<button id="left-button" class="movement controller-button" data-x="-1" data-y="0">LEFT</button>
 			</div>
 			<div class="y-buttons">
-				<button id="up-button" class="controller-button" data-x="0" data-y="1">UP</button>
-				<button id="down-button" class="controller-button" data-x="0" data-y="-1" >DOWN</button>
+				<button id="up-button" class="movement controller-button" data-x="0" data-y="1">UP</button>
+				<button id="down-button" class="movement controller-button" data-x="0" data-y="-1" >DOWN</button>
 			</div>
 			<div class="right container">
-				<button id="right-button" class="controller-button" data-x="1" data-y="0">RIGHT</button>
+				<button id="right-button" class="movement controller-button" data-x="1" data-y="0">RIGHT</button>
 			</div>
 		</div>
 		<div class="right-button-container">
@@ -126,7 +126,7 @@
 			"up-button": 0x05,    // StopMoveUp
 			"down-button": 0x06   // StopMoveDown
 		};
-        const socket = new WebSocket("ws://192.168.0.18:8080");
+        const socket = new WebSocket("ws://192.168.1.10:8080");
 
         socket.addEventListener("open", (event) => {
             console.log("Connected to Unity server!");
