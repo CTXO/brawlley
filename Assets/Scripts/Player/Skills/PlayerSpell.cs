@@ -53,6 +53,29 @@ namespace Brawlley
                 StartCooldown();
             }
         }
+        public  void OnRemoteAttack()
+        {
+            if (status == AttackStatus.Ready)
+            {
+
+
+                if (attackDirection == Vector2.zero)
+                    attackDirection.x = transform.localScale.x;
+
+                GameObject spellObject = Instantiate(spellPrefab, spellSpawnPoint.position, Quaternion.identity);
+
+                Spell spell = spellObject.GetComponent<Spell>();
+                spell.damage = damage;
+                spell.knockbackForce = knockbackForce;
+                spell.ignoreTeam = player.Team;
+                spell.speed = travelSpeed;
+                spell.direction = attackDirection;
+                spell.ApplyGravity(attackDirection.y > 0f ? verticalCastGravity : 0f);
+                spell.ApplyForce();
+
+                StartCooldown();
+            }
+        }
         #endregion
     }
 }

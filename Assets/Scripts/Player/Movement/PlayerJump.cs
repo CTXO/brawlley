@@ -26,15 +26,23 @@ public class PlayerJump : MonoBehaviour
 
     public float Direction { set => verticalDirection = value; }
     public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.started)
         {
-            if (context.started)
+            if (JumpsRemaining > 0)
             {
-                if (JumpsRemaining > 0)
-                {
-                    DoAJump();
-                }
+                DoAJump();
             }
         }
+    }
+
+    public void OnRemoteJump()
+    {
+        if (JumpsRemaining > 0)
+        {
+            DoAJump();
+        }
+    }
 
     #region MonoBehaviour Lifecycle Methods
     void Start()

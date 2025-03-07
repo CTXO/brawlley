@@ -31,6 +31,12 @@ public class PlayerDash : MonoBehaviour
         }
         
     }
+    public void OnRemoteDash()
+    {
+        if (isDashing || !canDash) return;
+        StartDash(inputDirection);
+    }
+
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();

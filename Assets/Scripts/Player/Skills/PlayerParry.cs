@@ -28,6 +28,15 @@ public class PlayerParry : MonoBehaviour
             StartCoroutine(Cooldown());
         }
     }
+    public void OnRemoteParry()
+    {
+        // O player só pode subir uma barreira no chão ou se der um Dash neutro (Gravity Cancel)
+        if (canParry && (surfaceDetector.GetOnGround() || dash.GravityCancel))
+        {
+            SummonBarrier();
+            StartCoroutine(Cooldown());
+        }
+    }
 
     // Gerar uma barreira na frente do player numa margem controlada pelo barrier Offset
     private Vector3 GetBarrierPosition()
