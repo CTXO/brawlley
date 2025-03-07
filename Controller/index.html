@@ -70,19 +70,20 @@
     </style>
 </head>
 <body>
-	<h1 id="title" style="display: none;">Title</h1>
+	<h1 id="title">Title</h1>
+	<div class="hidden" style="display: none;">Pressing</div>
 
 	<div class="button-container">
 		<div class="left-button-container">
 			<div class="left container">
-				<button id="left-button" class="controller-button" data-x="-1" data-y="0">LEFT</button>
+				<button id="left-button" class="movement controller-button" data-x="-1" data-y="0">LEFT</button>
 			</div>
 			<div class="y-buttons">
-				<button id="up-button" class="controller-button" data-x="0" data-y="1">UP</button>
-				<button id="down-button" class="controller-button" data-x="0" data-y="-1" >DOWN</button>
+				<button id="up-button" class="movement controller-button" data-x="0" data-y="1">UP</button>
+				<button id="down-button" class="movement controller-button" data-x="0" data-y="-1" >DOWN</button>
 			</div>
 			<div class="right container">
-				<button id="right-button" class="controller-button" data-x="1" data-y="0">RIGHT</button>
+				<button id="right-button" class="movement controller-button" data-x="1" data-y="0">RIGHT</button>
 			</div>
 		</div>
 		<div class="right-button-container">
@@ -95,7 +96,7 @@
 				<button id="dash-button" class="controller-button">DASH</button>
 			</div>
 			<div class="buttton-row third-row">
-				<button id="dash-button" class="controller-button">JUMP</button>
+				<button id="jump-button" class="controller-button">JUMP</button>
 
 			</div>
 
@@ -105,7 +106,27 @@
 	</div>
 
     <script>
-        const socket = new WebSocket("ws://192.168.0.18:8080");
+
+		const buttonMapping = {
+			"left-button": 0x03,   // MoveLeft
+			"right-button": 0x04,  // MoveRight
+			"up-button": 0x01,     // MoveUp
+			"down-button": 0x02,   // MoveDown
+			"melee-button": 0x0E,  // Melee
+			"block-button": 0x0B,  // Parry (Blocking)
+			"cast-button": 0x0C,   // SpellStart
+			"dash-button": 0x0A,   // Dash
+			"jump-button": 0x09    // Jump
+		};
+
+
+		const stopCodes = {
+			"left-button": 0x07,  // StopMoveLeft
+			"right-button": 0x08, // StopMoveRight
+			"up-button": 0x05,    // StopMoveUp
+			"down-button": 0x06   // StopMoveDown
+		};
+        const socket = new WebSocket("ws://192.168.1.10:8080");
 
         socket.addEventListener("open", (event) => {
             console.log("Connected to Unity server!");
@@ -117,39 +138,38 @@
 		
 		let latency = 0;
 
-		setInterval(() => {
-			const timestamp = BigInt(Date.now()); 
-			const buffer = new ArrayBuffer(9);
-			const view = new DataView(buffer);
-			view.setUint8(0, 99); 
-			view.setBigUint64(1, timestamp, true);
-			socket.send(buffer);
-			console.log("sent ping")
-		}, 1000);
+		// setInterval(() => {
+		// 	const timestamp = BigInt(Date.now()); 
+		// 	const buffer = new ArrayBuffer(9);
+		// 	const view = new DataView(buffer);
+		// 	view.setUint8(0, 99); 
+		// 	view.setBigUint64(1, timestamp, true);
+		// 	socket.send("ping");
+		// 	console.log("sent ping")
+		// }, 1000);
 
-		// Handle pong responses
-		socket.onmessage = async (event) => {
-			if (event.data.size === 9) {
-				const arrayBuffer = await event.data.arrayBuffer();
-				const view = new DataView(arrayBuffer);
-				const marker = view.getUint8(0);
-				if (marker === 100) { 
-					const serverTimestamp = view.getBigUint64(1, true);
-					const now = Date.now();
-					const rtt = now - Number(serverTimestamp); 
-					latency = rtt / 2; 
-					document.getElementById('title').innerText = `Latency: ${latency}ms`;
-				}
-			}
-		};
+		// // Handle pong responses
+		// socket.onmessage = async (event) => {
+		// 	if (event.data.size === 9) {
+		// 		const arrayBuffer = await event.data.arrayBuffer();
+		// 		const view = new DataView(arrayBuffer);
+		// 		const marker = view.getUint8(0);
+		// 		if (marker === 100) { 
+		// 			const serverTimestamp = view.getBigUint64(1, true);
+		// 			const now = Date.now();
+		// 			const rtt = now - Number(serverTimestamp); 
+		// 			latency = rtt / 2; 
+		// 			document.getElementById('title').innerText = `Latency: ${latency}ms`;
+		// 		}
+		// 	}
+		// };
 
         function send(event, command) {
-
 			console.log(event)
 			console.log(command)
             if (socket.readyState === WebSocket.OPEN) {
 				console.log("sent command", command)
-                socket.send(buffer);
+                socket.send("MoveLeft");
             }
         }
 
@@ -169,16 +189,17 @@
 			const yString = event.target.getAttribute("data-y");
 			const x = parseInt(xString);
 			const y = parseInt(yString);
-			const buffer = new ArrayBuffer(2);
+			const code = buttonMapping[event.target.id];
+			if (code === undefined) {
+				return;
+			}
+			const buffer = new ArrayBuffer(1);
 			const dataView = new DataView(buffer);
 
-			dataView.setInt8(0, x);
-			dataView.setInt8(1, y);
+			dataView.setUint8(0, code);
 			pressFunction = pressButton.bind(null, buffer, i)
 			frameIds[i] = requestAnimationFrame(pressFunction);
 			pressingElement.classList.remove('hidden');
-
-
 		}
 
 		const upEvent = (i, event) => {
@@ -186,13 +207,16 @@
 			if (frameId) {
 				console.log("cancel frame", frameId)
 				cancelAnimationFrame(frameId)
-				const buffer = new ArrayBuffer(2);
+				stopCode = stopCodes[event.target.id];
+				if (stopCode === undefined) {
+					return;
+				}
+				const buffer = new ArrayBuffer(1);
 				const dataView = new DataView(buffer);
-				dataView.setInt8(0, 0);
-				dataView.setInt8(1, 0);
+				dataView.setUint8(0, stopCode);
 
 				if (socket.readyState === WebSocket.OPEN) {
-					socket.send(buffer)
+					socket.send(buffer);
 					pressingElement.classList.add('hidden');
 				}
 			}
