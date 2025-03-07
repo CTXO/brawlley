@@ -130,20 +130,20 @@ public class WebSocketServerManager : MonoBehaviour
                 if (direction.x == 1) direction.x = 0;
                 break;
             case 0x09: // Jump
-                player.GetComponent<PlayerJump>().OnJump(new InputAction.CallbackContext());
+                player.GetComponent<PlayerJump>().OnRemoteJump();
                 break;
             case 0x0A: // Dash
-                player.GetComponent<PlayerDash>().OnDash(new InputAction.CallbackContext());
+                player.GetComponent<PlayerDash>().OnRemoteDash();
                 break;
             case 0x0B: // Parry
-                player.GetComponent<PlayerParry>().OnParry(new InputAction.CallbackContext());
+                player.GetComponent<PlayerParry>().OnRemoteParry();
                 break;
             case 0x0C: // SpellStart
                 player.OnAiming(new InputAction.CallbackContext());
                 break;
             case 0x0D: // SpellRelease
                 player.OnStopAiming(new InputAction.CallbackContext());
-                player.GetComponent<PlayerSpell>().OnAttack(new InputAction.CallbackContext());
+                player.GetComponent<PlayerSpell>().OnRemoteAttack();
                 break;
             case 0x0E: // Melee
                 player.GetComponent<PlayerMelee>().OnAttack(new InputAction.CallbackContext());
