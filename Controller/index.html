@@ -12,13 +12,21 @@
 	<div class="button-container">
 		<div class="left-button-container">
 			<button id="up-left-button" class="movement diagonal controller-button" data-x="0" data-y="1"></button>
+			<button id="up-left-button-touch" class="movement diagonal touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="up-right-button" class="movement diagonal controller-button" data-x="0" data-y="1"></button>
+			<button id="up-right-button-touch" class="movement diagonal touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="down-left-button" class="movement diagonal controller-button" data-x="0" data-y="1"></button>
+			<button id="down-left-button-touch" class="movement diagonal touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="down-right-button" class="movement diagonal controller-button" data-x="0" data-y="1"></button>
+			<button id="down-right-button-touch" class="movement diagonal touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="up-button" class="movement controller-button" data-x="0" data-y="1">UP</button>
+			<button id="up-button-touch" class="movement touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="right-button" class="movement controller-button" data-x="1" data-y="0">RIGHT</button>
+			<button id="right-button-touch" class="movement touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="left-button" class="movement controller-button" data-x="-1" data-y="0">LEFT</button>
+			<button id="left-button-touch" class="movement touch-button controller-button" data-x="0" data-y="1"></button>
 			<button id="down-button" class="movement controller-button" data-x="0" data-y="-1" >DOWN</button>
+			<button id="down-button-touch" class="movement controller-button touch-button" data-x="0" data-y="-1" ></button>
 		</div>
 		<div class="right-button-container">
 			<div class="buttton-row first-row">
@@ -33,8 +41,6 @@
 				<button id="jump-button" class="controller-button">JUMP</button>
 
 			</div>
-
-
 
 		</div>
 	</div>
@@ -85,7 +91,7 @@
 			"down-left-button": 0x13, // StopDownLeft
 			"down-right-button": 0x13, // StopDownRight
 		};
-        const socket = new WebSocket("ws://192.168.1.7:8080");
+        const socket = new WebSocket("ws://192.168.1.10:8080");
 
         socket.addEventListener("open", (event) => {
             console.log("Connected to Unity server!");
@@ -146,18 +152,19 @@
 		}
 
 		downEvent = (i, event) => {
-			console.log("callign this down")
-			const code = buttonMapping[event.target.id];
+			const buttonId = event.target.id.replace('-touch', '')
+			console.log("callign this down: ", buttonId)
+			const code = buttonMapping[buttonId];
 			frameIds[i] = requestAnimationFrame(() => pressFunction(code, i));
 		}
-
 
 		const upEvent = (i, event) => {
 			const frameId = frameIds[i]
 			if (frameId) {
 				console.log("cancel frame", frameId)
 				cancelAnimationFrame(frameId)
-				stopCode = stopCodes[event.target.id];
+				const buttonId = event.target.id.replace('-touch', '')
+				stopCode = stopCodes[buttonId];
 				if (stopCode === undefined) {
 					return;
 				}
